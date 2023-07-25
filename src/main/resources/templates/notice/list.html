@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{ this :: title},~{ this :: body})}">
+<head>
+    <title>お知らせ一覧 | 回覧板</title>
+</head>
+<body>
+<h1 class="mt-3">お知らせ一覧</h1>
+<a href="../index.html" th:href="@{/}">HOME</a>
+<a href="./creationForm.html" th:href="@{/notice/creationForm}">＋作成</a>
+<table class="table table-hover">
+    <thead>
+    <tr>
+        <th>タイトル</th>
+        <th>内容</th>
+        <th>返答依頼</th>
+        <th>更新日時</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="notice : ${noticeList}">
+        <td>
+            <a href="./detail.html" th:href="@{/notice/{noticeId}(noticeId=${notice.id})}" th:text="${notice.title}">(タイトル)</a>
+        </td>
+        <td th:text="${notice.contents}">(内容)</td>
+        <td th:text="${notice.request_for_reply}">(返答依頼)</td>
+        <td th:text="${notice.updated_datetime}">(更新日時)</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
