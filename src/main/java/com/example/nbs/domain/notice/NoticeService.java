@@ -21,25 +21,23 @@ public class NoticeService {
     }
 
     @Transactional
-    public void create(String title, String contents, List<Path> filename, int request_for_reply, String dt) {
+    public void create(long id, String title, String contents, List<Path> filename, int request_for_reply, String dt) {
 
-        noticeRepository.insertNotice(title, contents, request_for_reply, dt);
-
-        int noticeLastId = fineByLastInsertId();
+        noticeRepository.insertNotice(id, title, contents, request_for_reply, dt);
 
         for (int i = 0; i < filename.size(); i++) {
-            noticeRepository.insertFile(noticeLastId, filename.get(i).getFileName().toString(), dt);
+            noticeRepository.insertFile(id, filename.get(i).getFileName().toString(), dt);
         }
 
     }
 
-    public int fineByLastInsertId() {
+    public long fineByLastInsertId() {
 
         return noticeRepository.fineByLastInsertNoticeId();
 
     }
 
-    public NoticeEntity findById(int noticeId) {
+    public NoticeEntity findById(long noticeId) {
 
         return noticeRepository.findByNoticeId(noticeId);
 

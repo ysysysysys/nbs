@@ -18,8 +18,4 @@ public class NoticeForm {
 
     private int request_for_reply;
 
-    private String created_datetime;
-
-    private String updated_datetime;
-
 }

@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class NoticeEntity {
 
-    private int id;
+    private long id;
     private String title;
     private String contents;
     private int request_for_reply;

@@ -20,6 +20,6 @@ public interface StorageService {
 
     void deleteAll();
 
-    void fileUpload();
+    void fileUpload(String folderName);
 
 }

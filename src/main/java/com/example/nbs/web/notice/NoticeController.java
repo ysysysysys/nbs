@@ -71,21 +71,20 @@ public class NoticeController {
 
         // システム日付取得
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
-        String dt = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm:ss"));
-        form.setCreated_datetime(dt);
-        form.setUpdated_datetime(dt);
+        String dtF1 = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss"));
+        String dtF2 = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm:ss"));
 
-        noticeService.create(form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), dt);
+        noticeService.create(Long.parseLong(dtF1), form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), dtF2);
 
         // ファイル保存
-        fileSystemStorageService.fileUpload();
+        fileSystemStorageService.fileUpload(dtF1);
 
         return "redirect:/notice";
 
     }
 
     @GetMapping("/{noticeId}")
-    public String showDetail(@PathVariable("noticeId") int noticeId, Model model) {
+    public String showDetail(@PathVariable("noticeId") long noticeId, Model model) {
 
         model.addAttribute("notice", noticeService.findById(noticeId));
 

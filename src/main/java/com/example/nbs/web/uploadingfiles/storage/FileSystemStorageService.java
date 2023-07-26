@@ -123,12 +123,17 @@ public class FileSystemStorageService implements StorageService {
      * 一時保存場所から移動する
      */
     @Override
-    public void fileUpload() {
+    public void fileUpload(String folderName) {
 
         // 元のフォルダのパス
         String sourceFolderPath = this.rootLocation.toAbsolutePath().toString();
         // 移動先のフォルダのパス
-        String destinationFolderPath = this.rootLocation2.toString();
+        String destinationFolderPath = this.rootLocation2.toString()+ File.separator + folderName;
+
+        File stopDir = new File(destinationFolderPath);
+        if (!stopDir.exists()) {
+            stopDir.mkdirs(); // ディレクトリの存在をチェックしてなければ作成
+        }
 
         File sourceFolder = new File(sourceFolderPath);
         File[] files = sourceFolder.listFiles(); // 元のフォルダ内のファイル一覧を取得
