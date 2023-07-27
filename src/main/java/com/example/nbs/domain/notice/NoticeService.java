@@ -43,4 +43,12 @@ public class NoticeService {
 
     }
 
+    @Transactional
+    public void update(long noticeId, String title, String contents, List<Path> filename, int requestForReply, String dtF2) {
+
+        noticeRepository.updateNotice(noticeId, title, contents, requestForReply, dtF2);
+
+
+    }
+
 }

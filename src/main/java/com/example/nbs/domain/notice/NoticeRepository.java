@@ -3,6 +3,7 @@ package com.example.nbs.domain.notice;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -23,5 +24,8 @@ public interface NoticeRepository {
 
     @Select("select * from nbs.notice where id = #{noticeId}")
     NoticeEntity findByNoticeId(long noticeId);
+
+    @Update("update nbs.notice set title = #{title},contents = #{contents},request_for_reply = #{request_for_reply},updated_datetime = #{dt} where id = #{id}")
+    void updateNotice(long id, String title, String contents, int request_for_reply, String dt);
 
 }

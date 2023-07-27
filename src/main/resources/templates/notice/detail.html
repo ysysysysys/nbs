@@ -12,7 +12,7 @@
 </div>
 
 <div class="mt-3">
-    <button type="submit" class="btn btn-secondary" th:formaction="@{/notice}">編集</button>
+    <a href="./editForm.html" th:href="@{/notice/editForm/{noticeId}(noticeId=${notice.id})}"><button class="btn btn-secondary">編集</button></a>
     <button type="submit" class="btn btn-danger" th:formaction="@{/notice}">削除</button>
 </div>
 </body>
