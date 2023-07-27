@@ -1,9 +1,6 @@
 package com.example.nbs.domain.notice;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -27,5 +24,11 @@ public interface NoticeRepository {
 
     @Update("update nbs.notice set title = #{title},contents = #{contents},request_for_reply = #{request_for_reply},updated_datetime = #{dt} where id = #{id}")
     void updateNotice(long id, String title, String contents, int request_for_reply, String dt);
+
+    @Delete("delete from nbs.notice where id = #{id}")
+    void deleteNotice(long id);
+
+    @Delete("delete from nbs.file where notice_id = #{id}")
+    void deleteFile(long id);
 
 }

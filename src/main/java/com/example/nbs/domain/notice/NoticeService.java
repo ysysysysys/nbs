@@ -37,17 +37,24 @@ public class NoticeService {
 
     }
 
-    public NoticeEntity findById(long noticeId) {
+    public NoticeEntity findById(long id) {
 
-        return noticeRepository.findByNoticeId(noticeId);
+        return noticeRepository.findByNoticeId(id);
 
     }
 
     @Transactional
-    public void update(long noticeId, String title, String contents, List<Path> filename, int requestForReply, String dtF2) {
+    public void update(long id, String title, String contents, List<Path> filename, int requestForReply, String dtF2) {
 
-        noticeRepository.updateNotice(noticeId, title, contents, requestForReply, dtF2);
+        noticeRepository.updateNotice(id, title, contents, requestForReply, dtF2);
 
+    }
+
+    public void delete(long id) {
+
+        noticeRepository.deleteNotice(id);
+
+        noticeRepository.deleteFile(id);
 
     }
 

@@ -176,6 +176,27 @@ public class NoticeController {
 
     }
 
+    /**
+     * お知らせ削除(物理削除)
+     */
+    @PostMapping("/delete/{noticeId}")
+    public String delete(@Validated NoticeForm form, BindingResult bindingResult, Model model) {
 
+        // ファイル情報取得
+        List<Path> filePathInfo = fileSystemStorageService.loadAll().toList();
+
+        // URLを取得
+        String uri = ServletUriComponentsBuilder.fromCurrentRequestUri().toUriString();
+        String[] elements = uri.split("/");
+        String lastElement = elements[elements.length - 1];
+
+        noticeService.delete(Long.parseLong(lastElement));
+
+        // ファイル削除
+//        fileSystemStorageService.fileUpload(lastElement);
+
+        return "redirect:/notice";
+
+    }
 
 }
