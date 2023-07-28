@@ -1,5 +1,6 @@
 package com.example.nbs.web.uploadingfiles;
 
+import com.example.nbs.web.Global;
 import com.example.nbs.web.notice.NoticeForm;
 import com.example.nbs.web.uploadingfiles.storage.StorageFileNotFoundException;
 import com.example.nbs.web.uploadingfiles.storage.StorageService;
@@ -60,9 +61,7 @@ public class FileUploadController {
                         "serveFile", path.getFileName().toString()).build().toUri().toString()).collect(Collectors.toList()));
 
 
-        //model.addAllAttributes(model.asMap());
-
-        return "notice/creationForm";
+        return (Global.h1.equals("お知らせ作成")) ? "notice/creationForm":"notice/editForm";
 
     }
 

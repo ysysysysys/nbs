@@ -2,8 +2,10 @@ package com.example.nbs.web.notice;
 
 import com.example.nbs.domain.notice.NoticeEntity;
 import com.example.nbs.domain.notice.NoticeService;
+import com.example.nbs.web.Global;
 import com.example.nbs.web.uploadingfiles.FileUploadController;
 import com.example.nbs.web.uploadingfiles.storage.FileSystemStorageService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -51,6 +53,8 @@ public class NoticeController {
      */
     @GetMapping("/creationForm")
     public String showCreationForm(Model model) {
+
+        Global.h1 = "お知らせ作成";
 
         model.addAttribute("noticeForm", new NoticeForm());
 
@@ -122,7 +126,11 @@ public class NoticeController {
      * お知らせ編集フォーム表示
      */
     @GetMapping("/editForm/{noticeId}")
-    public String showEditForm(@PathVariable("noticeId") long noticeId, Model model) {
+    public String showEditForm(@PathVariable("noticeId") long noticeId, Model model, HttpSession session) {
+
+        Global.h1 = "お知らせ編集";
+
+        session.setAttribute("noticeId", noticeId);
 
         NoticeEntity noticeEntity = noticeService.findById(noticeId);
         model.addAttribute("notice_Id", noticeId);
@@ -136,8 +144,10 @@ public class NoticeController {
         // NoticeFormをモデルに追加
         model.addAttribute("noticeForm", noticeForm);
 
-        // ファイル情報取得
-
+        // ファイル情報をモデルに追加
+        model.addAttribute("files", fileSystemStorageService.loadAll().map(
+                path -> MvcUriComponentsBuilder.fromMethodName(FileUploadController.class,
+                        "serveFile", path.getFileName().toString()).build().toUri().toString()).collect(Collectors.toList()));
 
         return "notice/editForm";
 
@@ -146,8 +156,8 @@ public class NoticeController {
     /**
      * お知らせ公開(更新)
      */
-    @PostMapping("/editForm/{noticeId}")
-    public String update(@Validated NoticeForm form, BindingResult bindingResult, Model model) {
+    @PostMapping("/editForm")
+    public String update(@Validated NoticeForm form, BindingResult bindingResult, Model model, HttpSession session) {
 
         if (bindingResult.hasErrors()) {
 
@@ -173,15 +183,12 @@ public class NoticeController {
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
         String dtF2 = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
 
-        // URLを取得
-        String uri = ServletUriComponentsBuilder.fromCurrentRequestUri().toUriString();
-        String[] elements = uri.split("/");
-        String lastElement = elements[elements.length - 1];
+        Long noticeId = (Long) session.getAttribute("noticeId");
 
-        noticeService.update(Long.parseLong(lastElement), form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), dtF2);
+        noticeService.update(noticeId, form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), dtF2);
 
         // ファイル保存
-        fileSystemStorageService.uploadFile(lastElement);
+//        fileSystemStorageService.uploadFile(noticeId.toString());
 
         return "redirect:/notice";
 
