@@ -3,9 +3,7 @@ package com.example.nbs.web.uploadingfiles;
 import com.example.nbs.web.notice.NoticeForm;
 import com.example.nbs.web.uploadingfiles.storage.StorageFileNotFoundException;
 import com.example.nbs.web.uploadingfiles.storage.StorageService;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
@@ -20,7 +18,10 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
@@ -33,6 +34,9 @@ public class FileUploadController {
         this.storageService = storageService;
     }
 
+    /**
+     * アップロードファイル一覧表示
+     */
     @GetMapping("/formAfterUpdate")
     public String listUploadedFiles(Model model, HttpSession session) throws IOException {
 
@@ -62,6 +66,9 @@ public class FileUploadController {
 
     }
 
+    /**
+     * プレビュー表示
+     */
     @GetMapping("/files/{filename:.+}")
     @ResponseBody
     public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
@@ -79,6 +86,9 @@ public class FileUploadController {
                 .body(file);
     }
 
+    /**
+     * ファイルアップロード(一時フォルダに格納)
+     */
     @PostMapping("/upload")
     public String handleFileUpload(@RequestParam("file") MultipartFile file, @ModelAttribute("noticeForm") NoticeForm noticeForm, RedirectAttributes redirectAttributes, HttpSession session) throws IOException {
 
@@ -87,6 +97,47 @@ public class FileUploadController {
                 "You successfully uploaded " + file.getOriginalFilename() + "!");
 
         // ファイルのアップロードした後、 セッション属性にフォーム・データを格納
+        session.setAttribute("title", noticeForm.getTitle());
+        session.setAttribute("contents", noticeForm.getContents());
+        session.setAttribute("request_for_reply", noticeForm.getRequest_for_reply());
+
+        return "redirect:/formAfterUpdate";
+
+    }
+
+    /**
+     * アップロード取り消し(一時フォルダから削除)
+     */
+    @PostMapping("/cancel")
+    public String handleFileCancel(@RequestParam(value = "selectedFiles", required = false) List<String> selectedFiles, @ModelAttribute("noticeForm") NoticeForm noticeForm, HttpSession session) throws IOException {
+
+        if (selectedFiles != null && !selectedFiles.isEmpty()) {
+
+            // チェックボックスで選択されたファイル名を取得
+            List<String> fileNames = new ArrayList<>();
+            for (String filePath : selectedFiles) {
+
+                try {
+                    // URLデコード(%20余分なスペース削除)
+                    String decodedUrl = URLDecoder.decode(filePath, "UTF-8");
+
+                    String[] elements = decodedUrl.split("/");
+                    String lastElement = elements[elements.length - 1];
+
+                    fileNames.add(lastElement);
+
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            // ファイル削除
+            storageService.deleteFile(fileNames);
+
+        }
+
+        // ファイルの削除した後、 セッション属性にフォーム・データを格納
         session.setAttribute("title", noticeForm.getTitle());
         session.setAttribute("contents", noticeForm.getContents());
         session.setAttribute("request_for_reply", noticeForm.getRequest_for_reply());

@@ -89,7 +89,7 @@ public class NoticeController {
         noticeService.create(Long.parseLong(dtF1), form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), dtF2);
 
         // ファイル保存
-        fileSystemStorageService.fileUpload(dtF1);
+        fileSystemStorageService.uploadFile(dtF1);
 
         return "redirect:/notice";
 
@@ -170,7 +170,7 @@ public class NoticeController {
         noticeService.update(Long.parseLong(lastElement), form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), dtF2);
 
         // ファイル保存
-        fileSystemStorageService.fileUpload(lastElement);
+        fileSystemStorageService.uploadFile(lastElement);
 
         return "redirect:/notice";
 

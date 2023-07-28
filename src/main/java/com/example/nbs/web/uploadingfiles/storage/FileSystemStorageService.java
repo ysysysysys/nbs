@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Service
@@ -123,12 +124,12 @@ public class FileSystemStorageService implements StorageService {
      * 一時保存場所から移動する
      */
     @Override
-    public void fileUpload(String folderName) {
+    public void uploadFile(String folderName) {
 
         // 元のフォルダのパス
         String sourceFolderPath = this.rootLocation.toAbsolutePath().toString();
         // 移動先のフォルダのパス
-        String destinationFolderPath = this.rootLocation2.toString()+ File.separator + folderName;
+        String destinationFolderPath = this.rootLocation2.toString() + File.separator + folderName;
 
         File stopDir = new File(destinationFolderPath);
         if (!stopDir.exists()) {
@@ -155,6 +156,24 @@ public class FileSystemStorageService implements StorageService {
                 }
             }
         }
+    }
+
+    /**
+     * 一時保存場所から削除する
+     */
+    @Override
+    public void deleteFile(List<String> fileNames) {
+
+        for (String fileName : fileNames) {
+            // 元のフォルダのパス
+            String sourceFolderPath = this.rootLocation.toAbsolutePath().toString();
+
+            File file = new File(sourceFolderPath + File.separator + fileName);
+
+            // ファイルを削除
+            file.delete();
+        }
+
     }
 
 }

@@ -4,6 +4,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.stream.Stream;
 
 public interface StorageService {
@@ -20,6 +21,8 @@ public interface StorageService {
 
     void deleteAll();
 
-    void fileUpload(String folderName);
+    void uploadFile(String folderName);
+
+    void deleteFile(List<String> fileNames);
 
 }
