@@ -25,4 +25,6 @@ public interface StorageService {
 
     void deleteFile(List<String> fileNames);
 
+    void downloadFile(String folderName);
+
 }

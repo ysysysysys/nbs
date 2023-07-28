@@ -12,6 +12,17 @@
 </div>
 
 <div class="mt-3">
+    <label class="form-label">添付ファイル</label>
+    <ul>
+        <li th:each="file : ${files}">
+            <label>
+                <a th:href="${file}" th:text="${file}" target="_blank"></a>
+            </label>
+        </li>
+    </ul>
+</div>
+
+<div class="mt-3">
     <div class="d-flex gap-1">
         <a href="./editForm.html" th:href="@{/notice/editForm/{noticeId}(noticeId=${notice.id})}">
             <button class="btn btn-secondary">編集</button>

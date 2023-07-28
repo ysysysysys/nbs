@@ -103,6 +103,17 @@ public class NoticeController {
 
         model.addAttribute("notice", noticeService.findById(noticeId));
 
+        // 一時フォルダクリア
+        fileSystemStorageService.deleteAll();
+        fileSystemStorageService.init();
+
+        // ファイルを一時フォルダにコピー
+        fileSystemStorageService.downloadFile(String.valueOf(noticeId));
+
+        model.addAttribute("files", fileSystemStorageService.loadAll().map(
+                path -> MvcUriComponentsBuilder.fromMethodName(FileUploadController.class,
+                        "serveFile", path.getFileName().toString()).build().toUri().toString()).collect(Collectors.toList()));
+
         return "notice/detail";
 
     }

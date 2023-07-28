@@ -121,7 +121,7 @@ public class FileSystemStorageService implements StorageService {
     }
 
     /**
-     * 一時保存場所から移動する
+     * 一時保存場所から保管場所に移動する
      */
     @Override
     public void uploadFile(String folderName) {
@@ -174,6 +174,44 @@ public class FileSystemStorageService implements StorageService {
             file.delete();
         }
 
+    }
+
+    /**
+     * 保管場所から一時保存場所にコピーする
+     */
+    @Override
+    public void downloadFile(String folderName) {
+
+        // 元のフォルダのパス
+        String sourceFolderPath = this.rootLocation2.toString() + File.separator + folderName;
+        // 移動先のフォルダのパス
+        String destinationFolderPath = this.rootLocation.toAbsolutePath().toString();
+
+        File stopDir = new File(destinationFolderPath);
+        if (!stopDir.exists()) {
+            stopDir.mkdirs(); // ディレクトリの存在をチェックしてなければ作成
+        }
+
+        File sourceFolder = new File(sourceFolderPath);
+        File[] files = sourceFolder.listFiles(); // 元のフォルダ内のファイル一覧を取得
+
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile()) { // ファイルの場合のみコピーする
+                    String destinationFilePath = destinationFolderPath + File.separator + file.getName();
+                    Path destinationPath = new File(destinationFilePath).toPath();
+
+                    try {
+                        Files.copy(file.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING); // ファイルを移動する
+
+                        System.out.println("Moved file: " + file.getName());
+                    } catch (IOException e) {
+                        System.out.println("Failed to move file: " + file.getName());
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 
 }
