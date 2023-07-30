@@ -53,8 +53,7 @@ public class FileSystemStorageService implements StorageService {
                 Files.copy(inputStream, destinationFile,
                         StandardCopyOption.REPLACE_EXISTING);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new StorageException("Failed to store file.", e);
         }
 
@@ -66,8 +65,7 @@ public class FileSystemStorageService implements StorageService {
             return Files.walk(this.rootLocation, 1)
                     .filter(path -> !path.equals(this.rootLocation))
                     .map(this.rootLocation::relativize);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new StorageException("Failed to read stored files", e);
         }
 
@@ -88,14 +86,12 @@ public class FileSystemStorageService implements StorageService {
             Resource resource = new UrlResource(file.toUri());
             if (resource.exists() || resource.isReadable()) {
                 return resource;
-            }
-            else {
+            } else {
                 throw new StorageFileNotFoundException(
                         "Could not read file: " + filename);
 
             }
-        }
-        catch (MalformedURLException e) {
+        } catch (MalformedURLException e) {
             throw new StorageFileNotFoundException("Could not read file: " + filename, e);
         }
 
@@ -113,8 +109,7 @@ public class FileSystemStorageService implements StorageService {
 
         try {
             Files.createDirectories(rootLocation);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new StorageException("Could not initialize storage", e);
         }
 
@@ -131,15 +126,18 @@ public class FileSystemStorageService implements StorageService {
         // 移動先のフォルダのパス
         String destinationFolderPath = this.rootLocation2.toString() + File.separator + folderName;
 
-        File stopDir = new File(destinationFolderPath);
-        if (!stopDir.exists()) {
-            stopDir.mkdirs(); // ディレクトリの存在をチェックしてなければ作成
-        }
-
         File sourceFolder = new File(sourceFolderPath);
         File[] files = sourceFolder.listFiles(); // 元のフォルダ内のファイル一覧を取得
 
         if (files != null) {
+
+            if (files.length > 0) {
+                File stopDir = new File(destinationFolderPath);
+                if (!stopDir.exists()) {
+                    stopDir.mkdirs(); // ディレクトリの存在をチェックしてなければ作成
+                }
+            }
+
             for (File file : files) {
                 if (file.isFile()) { // ファイルの場合のみ移動する
                     String destinationFilePath = destinationFolderPath + File.separator + file.getName();
@@ -212,6 +210,70 @@ public class FileSystemStorageService implements StorageService {
                 }
             }
         }
+    }
+
+    /**
+     * フォルダのリネーム
+     */
+    public String renameFolder(String beforeFolderName) {
+
+        // 変更前
+        File beforeFolderPath = new File(this.rootLocation2.toString() + File.separator + beforeFolderName);
+        if (!beforeFolderPath.exists()) {
+
+            return "";
+        }
+
+        // 変更後
+        String afterFolderName = beforeFolderName + "_back";
+        File afterFolderPath = new File(this.rootLocation2.toString() + File.separator + afterFolderName);
+
+        // ファイル・ディレクトリの名前変更する
+        beforeFolderPath.renameTo(afterFolderPath);
+
+        return afterFolderName;
+
+    }
+
+    /**
+     * ファイル・ディレクトリ削除
+     */
+    public void deleteFolder(String folderName) {
+
+        File deleteFolderPath = new File(this.rootLocation2.toString() + File.separator + folderName);
+        if (!deleteFolderPath.exists()) {
+            return;
+        }
+
+        File[] files = deleteFolderPath.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].exists() && files[i].isFile()) {
+                files[i].delete();
+            }
+        }
+
+        deleteFolderPath.delete();
+
+    }
+
+    /**
+     * アップロードファイル更新
+     */
+    public void updateFile(String folderName) {
+
+        // ファイル・ディレクトリのリネーム
+        String afterFolderName = renameFolder(folderName);
+
+        // 一時保存場所から保管場所に移動する
+        uploadFile(folderName);
+
+        if (!afterFolderName.equals("")) {
+
+            // フォルダ削除
+            deleteFolder(afterFolderName);
+
+        }
+
     }
 
 }

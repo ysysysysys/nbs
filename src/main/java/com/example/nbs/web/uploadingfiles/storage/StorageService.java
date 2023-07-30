@@ -27,4 +27,10 @@ public interface StorageService {
 
     void downloadFile(String folderName);
 
+    String renameFolder(String beforeFolderName);
+
+    void deleteFolder(String folderName);
+
+    void updateFile(String folderName);
+
 }

@@ -69,7 +69,7 @@ public class NoticeController {
     /**
      * お知らせ公開(登録)
      */
-    @PostMapping
+    @PostMapping("/creation")
     public String create(@Validated NoticeForm form, BindingResult bindingResult, Model model) {
 
         if (bindingResult.hasErrors()) {
@@ -82,18 +82,23 @@ public class NoticeController {
 
         }
 
-        // ファイル情報取得
-        List<Path> filePathInfo = fileSystemStorageService.loadAll().toList();
-
         // システム日付取得
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
         String dtF1 = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         String dtF2 = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
 
-        noticeService.create(Long.parseLong(dtF1), form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), dtF2);
+        // ファイル情報取得
+        List<Path> filePathInfo = fileSystemStorageService.loadAll().toList();
 
-        // ファイル保存
-        fileSystemStorageService.uploadFile(dtF1);
+        if (filePathInfo.size() > 0) {
+
+            // ファイル保存
+            fileSystemStorageService.uploadFile(dtF1);
+
+        }
+
+        // DB反映
+        noticeService.create(Long.parseLong(dtF1), form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), dtF2);
 
         return "redirect:/notice";
 
@@ -156,7 +161,7 @@ public class NoticeController {
     /**
      * お知らせ公開(更新)
      */
-    @PostMapping("/editForm")
+    @PostMapping("/edit")
     public String update(@Validated NoticeForm form, BindingResult bindingResult, Model model, HttpSession session) {
 
         if (bindingResult.hasErrors()) {
@@ -176,19 +181,20 @@ public class NoticeController {
 
         }
 
-        // ファイル情報取得
-        List<Path> filePathInfo = fileSystemStorageService.loadAll().toList();
-
         // システム日付取得
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
         String dtF2 = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
 
+        // ファイル情報取得
+        List<Path> filePathInfo = fileSystemStorageService.loadAll().toList();
+
         Long noticeId = (Long) session.getAttribute("noticeId");
 
-        noticeService.update(noticeId, form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), dtF2);
+        // アップロードファイル更新
+        fileSystemStorageService.updateFile(String.valueOf(noticeId));
 
-        // ファイル保存
-//        fileSystemStorageService.uploadFile(noticeId.toString());
+        // DB反映
+        noticeService.update(noticeId, form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), dtF2);
 
         return "redirect:/notice";
 
@@ -200,18 +206,19 @@ public class NoticeController {
     @PostMapping("/delete/{noticeId}")
     public String delete(@Validated NoticeForm form, BindingResult bindingResult, Model model) {
 
-        // ファイル情報取得
-        List<Path> filePathInfo = fileSystemStorageService.loadAll().toList();
-
         // URLを取得
         String uri = ServletUriComponentsBuilder.fromCurrentRequestUri().toUriString();
         String[] elements = uri.split("/");
         String lastElement = elements[elements.length - 1];
 
-        noticeService.delete(Long.parseLong(lastElement));
+        // ファイル情報取得
+        List<Path> filePathInfo = fileSystemStorageService.loadAll().toList();
 
-        // ファイル削除
-//        fileSystemStorageService.fileUpload(lastElement);
+        // アップロードファイルファイル削除
+        fileSystemStorageService.deleteFolder(lastElement);
+
+        // DB反映
+        noticeService.delete(Long.parseLong(lastElement));
 
         return "redirect:/notice";
 

@@ -44,12 +44,19 @@ public class NoticeService {
     }
 
     @Transactional
-    public void update(long id, String title, String contents, List<Path> filename, int requestForReply, String dtF2) {
+    public void update(long id, String title, String contents, List<Path> filename, int requestForReply, String dt) {
 
-        noticeRepository.updateNotice(id, title, contents, requestForReply, dtF2);
+        noticeRepository.updateNotice(id, title, contents, requestForReply, dt);
+
+        noticeRepository.deleteFile(id);
+
+        for (int i = 0; i < filename.size(); i++) {
+            noticeRepository.insertFile(id, filename.get(i).getFileName().toString(), dt);
+        }
 
     }
 
+    @Transactional
     public void delete(long id) {
 
         noticeRepository.deleteNotice(id);
