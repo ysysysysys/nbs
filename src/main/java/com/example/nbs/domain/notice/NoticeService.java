@@ -14,26 +14,28 @@ public class NoticeService {
 
     private final NoticeRepository noticeRepository;
 
+    private final FileRepository fileRepository;
+
     public List<NoticeEntity> findAll() {
 
-        return noticeRepository.findAllNotice();
+        return noticeRepository.findAll();
 
     }
 
     @Transactional
     public void create(long id, String title, String contents, List<Path> filename, int request_for_reply, String dt) {
 
-        noticeRepository.insertNotice(id, title, contents, request_for_reply, dt);
+        noticeRepository.insert(id, title, contents, request_for_reply, dt);
 
         for (int i = 0; i < filename.size(); i++) {
-            noticeRepository.insertFile(id, filename.get(i).getFileName().toString(), dt);
+            fileRepository.insert(id, filename.get(i).getFileName().toString(), dt);
         }
 
     }
 
-    public long fineByLastInsertId() {
+    public long findByLastInsertId() {
 
-        return noticeRepository.fineByLastInsertNoticeId();
+        return noticeRepository.findByLastInsertNoticeId();
 
     }
 
@@ -44,14 +46,28 @@ public class NoticeService {
     }
 
     @Transactional
-    public void update(long id, String title, String contents, List<Path> filename, int requestForReply, String dt) {
+    public void update(long id, String title, String contents, List<Path> filename, int request_for_reply, String dt) {
 
-        noticeRepository.updateNotice(id, title, contents, requestForReply, dt);
+        if (noticeRepository.findByNoticeId(id) == null) {
 
-        noticeRepository.deleteFile(id);
+            // 登録
+            noticeRepository.insert(id, title, contents, request_for_reply, dt);
 
-        for (int i = 0; i < filename.size(); i++) {
-            noticeRepository.insertFile(id, filename.get(i).getFileName().toString(), dt);
+            for (int i = 0; i < filename.size(); i++) {
+                fileRepository.insert(id, filename.get(i).getFileName().toString(), dt);
+            }
+
+        } else {
+
+            // 更新
+            noticeRepository.update(id, title, contents, request_for_reply, dt);
+
+            fileRepository.delete(id);
+
+            for (int i = 0; i < filename.size(); i++) {
+                fileRepository.insert(id, filename.get(i).getFileName().toString(), dt);
+            }
+
         }
 
     }
@@ -59,9 +75,9 @@ public class NoticeService {
     @Transactional
     public void delete(long id) {
 
-        noticeRepository.deleteNotice(id);
+        noticeRepository.delete(id);
 
-        noticeRepository.deleteFile(id);
+        fileRepository.delete(id);
 
     }
 

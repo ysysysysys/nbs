@@ -1,8 +1,9 @@
-package com.example.nbs.web.notice;
+package com.example.nbs.web.draft;
 
+import com.example.nbs.domain.draft.DraftService;
 import com.example.nbs.domain.notice.NoticeEntity;
-import com.example.nbs.domain.notice.NoticeService;
 import com.example.nbs.web.Global;
+import com.example.nbs.web.notice.NoticeForm;
 import com.example.nbs.web.uploadingfiles.FileUploadController;
 import com.example.nbs.web.uploadingfiles.storage.FileSystemStorageService;
 import jakarta.servlet.http.HttpSession;
@@ -27,51 +28,33 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
-@RequestMapping("/notice")
+@RequestMapping("/draft")
 @RequiredArgsConstructor
-public class NoticeController {
+public class DraftController {
 
-    private final NoticeService noticeService;
+    private final DraftService draftService;
 
     @Autowired
     private FileSystemStorageService fileSystemStorageService;
 
     /**
-     * お知らせ一覧表示
+     * 下書き一覧表示
      */
-    @GetMapping
+    @GetMapping("/list")
     public String showList(Model model) {
 
-        List<NoticeEntity> noticeList = noticeService.findAll();
+        List<NoticeEntity> noticeList = draftService.findAll();
         model.addAttribute("noticeList", noticeList);
 
-        return "notice/list";
+        return "draft/list";
 
     }
 
     /**
-     * お知らせ作成フォーム表示
+     * お知らせ下書き保存(登録・更新)
      */
-    @GetMapping("/creationForm")
-    public String showCreationForm(Model model) {
-
-        Global.h1 = "お知らせ作成";
-
-        model.addAttribute("noticeForm", new NoticeForm());
-
-        // 一時フォルダクリア
-        fileSystemStorageService.deleteAll();
-        fileSystemStorageService.init();
-
-        return "notice/creationForm";
-
-    }
-
-    /**
-     * お知らせ公開(登録)
-     */
-    @PostMapping("/creation")
-    public String create(@Validated NoticeForm form, BindingResult bindingResult, Model model) {
+    @PostMapping("/save")
+    public String create(@Validated NoticeForm form, BindingResult bindingResult, Model model, HttpSession session) {
 
         if (bindingResult.hasErrors()) {
 
@@ -83,25 +66,37 @@ public class NoticeController {
 
         }
 
+        Long noticeId = (Long) session.getAttribute("noticeId");
+
         // システム日付取得
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
         String dtF1 = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         String dtF2 = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
 
+        if (noticeId == null) {
+            noticeId = Long.valueOf(dtF1);
+        }
+
+
         // ファイル情報取得
         List<Path> filePathInfo = fileSystemStorageService.loadAll().toList();
 
-        if (filePathInfo.size() > 0) {
-
-            // ファイル保存
-            fileSystemStorageService.uploadFile(dtF1);
-
-        }
+        // アップロードファイル更新
+        fileSystemStorageService.updateFile(String.valueOf(noticeId) + "_draft");
 
         // DB反映
-        noticeService.create(Long.parseLong(dtF1), form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), dtF2);
+        draftService.save(noticeId, form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), dtF2);
 
-        return "redirect:/notice";
+        // セッションクリア
+        Enumeration en = session.getAttributeNames();
+        String eName;
+
+        while (en.hasMoreElements()) {
+            eName = (String) en.nextElement();
+            session.removeAttribute(eName);
+        }
+
+        return "redirect:/draft/list";
 
     }
 
@@ -111,20 +106,20 @@ public class NoticeController {
     @GetMapping("/{noticeId}")
     public String showDetail(@PathVariable("noticeId") long noticeId, Model model) {
 
-        model.addAttribute("notice", noticeService.findById(noticeId));
+        model.addAttribute("notice", draftService.findById(noticeId));
 
         // 一時フォルダクリア
         fileSystemStorageService.deleteAll();
         fileSystemStorageService.init();
 
         // ファイルを一時フォルダにコピー
-        fileSystemStorageService.downloadFile(String.valueOf(noticeId));
+        fileSystemStorageService.downloadFile(String.valueOf(noticeId) + "_draft");
 
         model.addAttribute("files", fileSystemStorageService.loadAll().map(
                 path -> MvcUriComponentsBuilder.fromMethodName(FileUploadController.class,
                         "serveFile", path.getFileName().toString()).build().toUri().toString()).collect(Collectors.toList()));
 
-        return "notice/detail";
+        return "draft/detail";
 
     }
 
@@ -138,7 +133,7 @@ public class NoticeController {
 
         session.setAttribute("noticeId", noticeId);
 
-        NoticeEntity noticeEntity = noticeService.findById(noticeId);
+        NoticeEntity noticeEntity = draftService.findById(noticeId);
         model.addAttribute("notice_Id", noticeId);
 
         // NoticeFormの新しいインスタンスを作成し、取得したデータを設定
@@ -160,57 +155,6 @@ public class NoticeController {
     }
 
     /**
-     * お知らせ公開(更新)
-     */
-    @PostMapping("/edit")
-    public String update(@Validated NoticeForm form, BindingResult bindingResult, Model model, HttpSession session) {
-
-        if (bindingResult.hasErrors()) {
-
-            // URLを取得
-            String uri = ServletUriComponentsBuilder.fromCurrentRequestUri().toUriString();
-            String[] elements = uri.split("/");
-            String lastElement = elements[elements.length - 1];
-
-            model.addAttribute("notice_Id", lastElement);
-
-            model.addAttribute("files", fileSystemStorageService.loadAll().map(
-                    path -> MvcUriComponentsBuilder.fromMethodName(FileUploadController.class,
-                            "serveFile", path.getFileName().toString()).build().toUri().toString()).collect(Collectors.toList()));
-
-            return "notice/editForm";
-
-        }
-
-        // システム日付取得
-        ZonedDateTime zonedDateTime = ZonedDateTime.now();
-        String dtF2 = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
-
-        // ファイル情報取得
-        List<Path> filePathInfo = fileSystemStorageService.loadAll().toList();
-
-        Long noticeId = (Long) session.getAttribute("noticeId");
-
-        // アップロードファイル更新
-        fileSystemStorageService.updateFile(String.valueOf(noticeId));
-
-        // DB反映
-        noticeService.update(noticeId, form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), dtF2);
-
-        // セッションクリア
-        Enumeration en = session.getAttributeNames();
-        String eName;
-
-        while (en.hasMoreElements()) {
-            eName = (String) en.nextElement();
-            session.removeAttribute(eName);
-        }
-
-        return "redirect:/notice";
-
-    }
-
-    /**
      * お知らせ削除(物理削除)
      */
     @PostMapping("/delete/{noticeId}")
@@ -225,12 +169,12 @@ public class NoticeController {
         List<Path> filePathInfo = fileSystemStorageService.loadAll().toList();
 
         // アップロードファイルファイル削除
-        fileSystemStorageService.deleteFolder(lastElement);
+        fileSystemStorageService.deleteFolder(lastElement + "_draft");
 
         // DB反映
-        noticeService.delete(Long.parseLong(lastElement));
+        draftService.delete(Long.parseLong(lastElement));
 
-        return "redirect:/notice";
+        return "redirect:/draft/list";
 
     }
 

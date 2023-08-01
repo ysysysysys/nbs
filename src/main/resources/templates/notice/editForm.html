@@ -49,7 +49,7 @@
 
     <div class="mt-5"></div> <!-- マージンを追加 -->
 
-    <!--    返答依頼ラジオボックス追加-->
+    <!--    返答依頼ラジオボタン-->
     <div class="mt-3">
         <label class="form-label" for="request_for_replyRadio">返答依頼</label>
         <div id="request_for_replyRadio">
@@ -65,8 +65,7 @@
     </div>
 
     <div class="mt-3">
-        <!--  下書き保存のリンク記法のパスの箇所はポスト先を実装後書き換える-->
-        <button type="submit" class="btn btn-secondary" th:formaction="@{/notice}">下書き保存</button>
+        <button type="submit" class="btn btn-secondary" th:formaction="@{/draft/save}">下書き保存</button>
         <button type="submit" class="btn btn-primary" th:formaction="@{/notice/edit}">公開</button>
     </div>
 </form>
