@@ -11,7 +11,7 @@ public class NoticeEntity {
     private String title;
     private String contents;
     private int request_for_reply;
-    private int household_id;
+    private int user_id;
     private String created_datetime;
     private String updated_datetime;
 

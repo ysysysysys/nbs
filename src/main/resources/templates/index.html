@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
       th:replace="~{fragments/layout :: layout(~{ this :: title},~{ this :: body})}">
 <head>
     <title>HOME | 回覧板</title>
@@ -8,6 +9,7 @@
 <h1 class="mt-3"></h1>
 <ul>
     <li><a href="./notice/list.html" th:href="@{/notice}">お知らせ一覧</a></li>
+    <li sec:authorize="hasAuthority('ADMIN')"><a href="./user/list.html" th:href="@{/user}">ユーザー一覧</a></li>
     <li><a href="./logout.html" th:href="@{/logout}">ログアウト</a></li>
 </ul>
 </body>

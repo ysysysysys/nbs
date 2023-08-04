@@ -93,7 +93,10 @@ public class DraftController {
 
         while (en.hasMoreElements()) {
             eName = (String) en.nextElement();
-            session.removeAttribute(eName);
+            if (!eName.equals("org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository.CSRF_TOKEN") && !eName.equals("SPRING_SECURITY_CONTEXT")) {
+                session.removeAttribute(eName);
+            }
+
         }
 
         return "redirect:/draft/list";

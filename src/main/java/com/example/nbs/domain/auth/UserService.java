@@ -1,0 +1,33 @@
+package com.example.nbs.domain.auth;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class UserService {
+
+    private final UserRepository userRepository;
+
+    private final PasswordEncoder passwordEncoder;
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public List<UserEntity> findAll() {
+
+        return userRepository.findAll();
+
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public void create(String username, String password) {
+
+        var encodedPassword = passwordEncoder.encode(password);
+        userRepository.insert(username, encodedPassword);
+
+    }
+
+}

@@ -1,16 +1,20 @@
 package com.example.nbs.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
+@EnableMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     @Bean
@@ -24,14 +28,28 @@ public class SecurityConfig {
                 .loginProcessingUrl("/login")                                       // ログインFormActionUrl
         ).logout(logout -> logout
                 .logoutSuccessUrl("/")
-        ).authorizeHttpRequests(authz -> authz
+        ).authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                .requestMatchers("/login/**").permitAll()
-                .requestMatchers("/general").hasRole("GENERAL")
-                .requestMatchers("/admin").hasRole("ADMIN")
-                .anyRequest().authenticated()
+                .requestMatchers("/login/**").permitAll()                                    // /login階層以降のアクセスは認可不要
+                .requestMatchers("/user/**").hasAuthority("ADMIN")
+                .anyRequest().authenticated()                                                         // 全てのURLリクエストは認証されているユーザーしかアクセスできない
+
+        ).csrf(csrf -> csrf
+                .ignoringRequestMatchers("/notice/**")           // "/notice/" で始まるリクエストはすべてCSRF保護を除外する
+                .ignoringRequestMatchers("/draft/**")
+                .ignoringRequestMatchers("/upload/**")
+                .ignoringRequestMatchers("/cancel/**")
+
         );
+
         return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+
+        return Pbkdf2PasswordEncoder.defaultsForSpringSecurity_v5_8();
+
     }
 
 }

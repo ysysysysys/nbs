@@ -10,7 +10,7 @@ public interface NoticeRepository {
     @Select("select * from nbs.notice")
     List<NoticeEntity> findAll();
 
-    @Insert("insert into nbs.notice (id,title,contents,request_for_reply,household_id,created_datetime,updated_datetime) value (#{id},#{title},#{contents},#{request_for_reply},1,#{dt},#{dt})")
+    @Insert("insert into nbs.notice (id,title,contents,request_for_reply,user_id,created_datetime,updated_datetime) value (#{id},#{title},#{contents},#{request_for_reply},1,#{dt},#{dt})")
     void insert(long id, String title, String contents, int request_for_reply, String dt);
 
     @Select("select max(id) from nbs.notice")
