@@ -1,8 +1,10 @@
 package com.example.nbs.web.notice;
 
+import com.example.nbs.domain.attendance.AttendanceService;
 import com.example.nbs.domain.notice.NoticeEntity;
 import com.example.nbs.domain.notice.NoticeService;
 import com.example.nbs.web.Global;
+import com.example.nbs.web.attendance.AttendanceForm;
 import com.example.nbs.web.uploadingfiles.FileUploadController;
 import com.example.nbs.web.uploadingfiles.storage.FileSystemStorageService;
 import jakarta.servlet.http.HttpSession;
@@ -32,6 +34,8 @@ import java.util.stream.Collectors;
 public class NoticeController {
 
     private final NoticeService noticeService;
+
+    private final AttendanceService attendanceService;
 
     @Autowired
     private FileSystemStorageService fileSystemStorageService;
@@ -111,6 +115,7 @@ public class NoticeController {
     @GetMapping("/{noticeId}")
     public String showDetail(@PathVariable("noticeId") long noticeId, Model model) {
 
+        // お知らせ詳細取得してセット
         model.addAttribute("notice", noticeService.findById(noticeId));
 
         // 一時フォルダクリア
@@ -123,6 +128,23 @@ public class NoticeController {
         model.addAttribute("files", fileSystemStorageService.loadAll().map(
                 path -> MvcUriComponentsBuilder.fromMethodName(FileUploadController.class,
                         "serveFile", path.getFileName().toString()).build().toUri().toString()).collect(Collectors.toList()));
+
+
+        // 出席確認送信状況取得してセット
+        AttendanceForm attendanceForm = new AttendanceForm();
+        if (0 == attendanceService.existAttendance(noticeId, Global.userId)) {
+
+            attendanceForm.setAttendance_check(0);
+            attendanceForm.setSend_flg("NOTYET");
+
+        } else {
+
+            attendanceForm.setAttendance_check(1);
+            attendanceForm.setSend_flg("DONE");
+
+        }
+
+        model.addAttribute("attendanceForm", attendanceForm);
 
         return "notice/detail";
 
