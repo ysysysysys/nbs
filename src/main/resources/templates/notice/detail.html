@@ -15,6 +15,7 @@
 
 <div class="mt-3">
     <label class="form-label">添付ファイル</label>
+    <p th:if="${files.size eq 0}">添付ファイルは登録されていません。</p>
     <ul>
         <li th:each="file : ${files}">
             <label>
@@ -29,7 +30,8 @@
 <!--    返答チェックボックス追加-->
 <div class="mt-3">
     <div class="d-flex gap-1" sec:authorize="hasAuthority('USER')">
-        <form action="#" th:action="@{/notice/attendance/{noticeId}(noticeId=${notice.id})}" th:method="post" th:object="${attendanceForm}" enctype="multipart/form-data">
+        <form action="#" th:action="@{/notice/attendance/{noticeId}(noticeId=${notice.id})}" th:method="post"
+              th:object="${attendanceForm}" enctype="multipart/form-data">
             <input type="hidden" id="sent" th:field="*{send_flg}"/>
             <div th:if="${notice.request_for_reply eq 1}">
                 <div class="mt-3">
@@ -50,34 +52,6 @@
                 </div>
             </div>
         </form>
-        <script>
-            window.addEventListener('load',function(){
-
-                if (document.getElementById("sent").value == "DONE") {
-                     document.getElementById("attendanceCheck").disabled = true;
-                }
-
-            <!--  console.log("テスト用：F12のconsoleに出力");-->
-
-            });
-
-            // 「参加する」のチェックボックスを取得
-            const attendanceCheckbox = document.getElementById("attendanceCheck");
-            // 送信ボタンを取得
-            const submitBtn = document.getElementById("submit-btn");
-
-            // チェックボックスをクリックした時
-            attendanceCheckbox.addEventListener("change", () => {
-              // チェックされている場合
-              if (attendanceCheckbox.checked === true) {
-                submitBtn.disabled = false; // disabledを外す
-              }
-              // チェックされていない場合
-              else {
-                submitBtn.disabled = true; // disabledを付与
-              }
-            });
-        </script>
     </div>
 </div>
 
@@ -86,10 +60,13 @@
         <a href="./editForm.html" th:href="@{/notice/editForm/{noticeId}(noticeId=${notice.id})}">
             <button class="btn btn-secondary">編集</button>
         </a>
-        <form action="#" th:action="@{/notice/delete/{noticeId}(noticeId=${notice.id})}" th:method="post" th:object="${noticeForm}" enctype="multipart/form-data">
+        <form action="#" th:action="@{/notice/delete/{noticeId}(noticeId=${notice.id})}" th:method="post"
+              th:object="${noticeForm}" enctype="multipart/form-data">
             <button type="submit" class="btn btn-danger">削除</button>
         </form>
     </div>
 </div>
+
+<script th:src="@{/js/noticeDetail.js}"></script>
 </body>
 </html>
