@@ -1,6 +1,7 @@
 package com.example.nbs.web.notice;
 
 import com.example.nbs.domain.attendance.AttendanceService;
+import com.example.nbs.domain.notice.NoticeDetailDto;
 import com.example.nbs.domain.notice.NoticeEntity;
 import com.example.nbs.domain.notice.NoticeService;
 import com.example.nbs.web.Global;
@@ -47,7 +48,10 @@ public class NoticeController {
     public String showList(Model model) {
 
         List<NoticeEntity> noticeList = noticeService.findAll();
-        model.addAttribute("noticeList", noticeList);
+
+        List<NoticeDetailDto> noticeDetailDtoList = noticeService.toNoticeDetailDtoList(noticeList);
+
+        model.addAttribute("noticeList", noticeDetailDtoList);
 
         return "notice/list";
 

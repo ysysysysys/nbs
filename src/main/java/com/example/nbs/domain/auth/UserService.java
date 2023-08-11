@@ -1,11 +1,13 @@
 package com.example.nbs.domain.auth;
 
+import com.example.nbs.web.Global;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +29,14 @@ public class UserService {
 
         var encodedPassword = passwordEncoder.encode(password);
         userRepository.insert(username, encodedPassword, authority);
+
+    }
+
+    public long toUserId(String username) {
+
+        Optional<UserEntity> userEntity = userRepository.findByUsername(username);
+
+        return userEntity.get().getId();
 
     }
 

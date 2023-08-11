@@ -6,4 +6,6 @@ public class Global {
 
     public static long userId;
 
+    public static String authority;
+
 }

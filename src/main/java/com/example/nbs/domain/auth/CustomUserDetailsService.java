@@ -1,6 +1,5 @@
 package com.example.nbs.domain.auth;
 
-import com.example.nbs.web.Global;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,8 +19,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-        toUserId(username);
 
         return userRepository.findByUsername(username)
                 .map(
@@ -44,14 +40,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     private List<GrantedAuthority> toGrantedAuthorityList(UserEntity.Authority authority) {
 
         return Collections.singletonList(new SimpleGrantedAuthority(authority.name()));
-
-    }
-
-
-    private void toUserId(String username) {
-
-        Optional<UserEntity> userEntity = userRepository.findByUsername(username);
-        Global.userId = userEntity.get().getId();
 
     }
 

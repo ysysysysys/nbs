@@ -22,7 +22,7 @@ public class AttendanceController {
      * 出欠可否送信(登録)
      */
     @PostMapping("/notice/attendance/{noticeId}")
-    public String update(@Validated AttendanceForm form, @PathVariable("noticeId") long noticeId, HttpSession session) {
+    public String update(@Validated AttendanceForm form, @PathVariable("noticeId") long noticeId) {
 
         // システム日付取得
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
