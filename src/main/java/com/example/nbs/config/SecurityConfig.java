@@ -31,7 +31,6 @@ public class SecurityConfig {
         ).authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                 .requestMatchers("/login/**").permitAll()                                    // /login階層以降のアクセスは認可不要
-                .requestMatchers("/user/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()                                                         // 全てのURLリクエストは認証されているユーザーしかアクセスできない
 
         ).csrf(csrf -> csrf

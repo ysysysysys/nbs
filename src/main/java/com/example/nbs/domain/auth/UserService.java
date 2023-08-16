@@ -1,6 +1,5 @@
 package com.example.nbs.domain.auth;
 
-import com.example.nbs.web.Global;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,10 +24,16 @@ public class UserService {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    public void create(String username, String password, String authority) {
+    public void create(String username, String password, String authority, String fullname, String address, String dt) {
 
         var encodedPassword = passwordEncoder.encode(password);
-        userRepository.insert(username, encodedPassword, authority);
+        userRepository.insert(username, encodedPassword, authority, fullname, address, dt);
+
+    }
+
+    public UserEntity findById(long id) {
+
+        return userRepository.findByUserId(id);
 
     }
 
@@ -37,6 +42,19 @@ public class UserService {
         Optional<UserEntity> userEntity = userRepository.findByUsername(username);
 
         return userEntity.get().getId();
+
+    }
+
+    public void updatePassword(long id, String password, String dt) {
+
+        var encodedPassword = passwordEncoder.encode(password);
+        userRepository.updatePassword(id, encodedPassword, dt);
+
+    }
+
+    public void updateAuthority(long id, String authority, String dt) {
+
+        userRepository.updateAuthority(id, authority, dt);
 
     }
 

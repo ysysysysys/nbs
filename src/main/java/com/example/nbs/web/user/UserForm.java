@@ -11,6 +11,12 @@ import lombok.Data;
 public class UserForm {
 
     @NotBlank
+    private String fullname;
+
+    @NotBlank
+    private  String address;
+
+    @NotBlank
     @UniqueUsername
     private String username;
 

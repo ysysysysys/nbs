@@ -3,14 +3,17 @@ package com.example.nbs.web.user;
 import com.example.nbs.domain.auth.UserEntity;
 import com.example.nbs.domain.auth.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Controller
 @RequestMapping("/user")
@@ -19,6 +22,11 @@ public class UserController {
 
     private final UserService userService;
 
+    private final PasswordEncoder passwordEncoder;
+
+    /**
+     * ユーザー一覧表示
+     */
     @GetMapping
     public String showList(Model model) {
 
@@ -27,6 +35,9 @@ public class UserController {
         return "user/list";
     }
 
+    /**
+     * ユーザー作成フォーム表示
+     */
     @GetMapping("/creationForm")
     public String showCreationForm(@ModelAttribute UserForm form) {
 
@@ -37,6 +48,9 @@ public class UserController {
 
     }
 
+    /**
+     * ユーザー登録
+     */
     @PostMapping
     public String create(@Validated UserForm form, BindingResult bindingResult) {
 
@@ -44,9 +58,121 @@ public class UserController {
             return showCreationForm(form);
         }
 
-        userService.create(form.getUsername(), form.getPassword(), form.getAuthority());
+        // システム日付取得
+        ZonedDateTime zonedDateTime = ZonedDateTime.now();
+        String dtF2 = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
+
+        userService.create(form.getUsername(), form.getPassword(), form.getAuthority(), form.getFullname(), form.getAddress(), dtF2);
 
         return "redirect:/user";
+
+    }
+
+    /**
+     * ユーザー登録情報表示
+     */
+    @GetMapping("/{userId}")
+    public String showDetail(@PathVariable("userId") long userId, Model model) {
+
+        // ユーザー登録情報取得してセット
+        model.addAttribute("user", userService.findById(userId));
+
+        return "user/detail";
+
+    }
+
+    /**
+     * 権限変更フォーム表示
+     */
+    @GetMapping("/changeAuthorityForm/{userId}")
+    public String showChangeAuthorityForm(@PathVariable("userId") long userId, Model model) {
+
+        if (!model.containsAttribute("userAuthorityForm")) {
+
+            UserAuthorityForm userAuthorityForm = new UserAuthorityForm();
+            userAuthorityForm.setId(userId);
+            userAuthorityForm.setAuthority(String.valueOf(userService.findById(userId).getAuthority()));
+            model.addAttribute("userAuthorityForm", userAuthorityForm);
+
+        }
+
+        return "user/changeAuthorityForm";
+
+    }
+
+    /**
+     * パスワード変更フォーム表示
+     */
+    @GetMapping("/changePasswordForm/{userId}")
+    public String showChangePasswordForm(@PathVariable("userId") long userId, Model model) {
+
+        if (!model.containsAttribute("userPasswordForm")) {
+
+            UserPasswordForm userPasswordForm = new UserPasswordForm();
+            userPasswordForm.setId(userId);
+            model.addAttribute("userPasswordForm", userPasswordForm);
+
+        }
+
+        return "user/changePasswordForm";
+
+    }
+
+    /**
+     * 権限更新
+     */
+    @PostMapping("/changeAuthority")
+    public String changeAuthority(@Validated @ModelAttribute UserAuthorityForm userAuthorityForm, UriComponentsBuilder builder) {
+
+        // システム日付取得
+        ZonedDateTime zonedDateTime = ZonedDateTime.now();
+        String dtF2 = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
+
+        // DB反映
+        userService.updateAuthority(userAuthorityForm.getId(), userAuthorityForm.getAuthority(), dtF2);
+
+        // リダイレクト先を指定
+        URI location = builder.path("/user/" + userAuthorityForm.getId()).build().toUri();
+
+        return "redirect:" + location.toString();
+
+    }
+
+    /**
+     * パスワード更新
+     */
+    @PostMapping("/changePassword")
+    public String changePassword(@Validated @ModelAttribute UserPasswordForm userPasswordForm, BindingResult bindingResult, Model model, UriComponentsBuilder builder) {
+
+        if (bindingResult.hasErrors()) {
+
+            return showChangePasswordForm(userPasswordForm.getId(), model);
+
+        }
+
+        // 入力したパスワードとDBのハッシュ化されているパスワードの照合
+        String rawPass = userPasswordForm.getPassword();
+        String dbPass = userService.findById(userPasswordForm.getId()).getPassword();
+
+        if (!passwordEncoder.matches(rawPass, dbPass)) {
+
+            bindingResult.rejectValue("password", "validation.data-incorrect");
+
+            return showChangePasswordForm(userPasswordForm.getId(), model);
+
+        }
+
+        // システム日付取得
+        ZonedDateTime zonedDateTime = ZonedDateTime.now();
+        String dtF2 = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
+
+        // DB反映
+        userService.updatePassword(userPasswordForm.getId(), userPasswordForm.getPasswordNew(), dtF2);
+
+        // リダイレクト先を指定
+        URI location = builder.path("/user/" + userPasswordForm.getId()).build().toUri();
+
+        return "redirect:" + location.toString();
 
     }
 

@@ -10,6 +10,7 @@
 <ul>
     <li><a href="./notice/list.html" th:href="@{/notice}">お知らせ一覧</a></li>
     <li sec:authorize="hasAuthority('ADMIN')"><a href="./user/list.html" th:href="@{/user}">ユーザー一覧</a></li>
+    <li><a href="./user/detail.html" th:href="@{/user/{userId}(userId=${id})}">登録情報</a></li>
     <li><a href="./logout.html" th:href="@{/logout}">ログアウト</a></li>
 </ul>
 </body>

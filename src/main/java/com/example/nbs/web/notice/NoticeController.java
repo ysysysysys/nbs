@@ -193,13 +193,6 @@ public class NoticeController {
 
         if (bindingResult.hasErrors()) {
 
-            // URLを取得
-            String uri = ServletUriComponentsBuilder.fromCurrentRequestUri().toUriString();
-            String[] elements = uri.split("/");
-            String lastElement = elements[elements.length - 1];
-
-            model.addAttribute("notice_Id", lastElement);
-
             model.addAttribute("files", fileSystemStorageService.loadAll().map(
                     path -> MvcUriComponentsBuilder.fromMethodName(FileUploadController.class,
                             "serveFile", path.getFileName().toString()).build().toUri().toString()).collect(Collectors.toList()));
