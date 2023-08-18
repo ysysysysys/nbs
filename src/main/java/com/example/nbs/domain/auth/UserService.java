@@ -51,6 +51,12 @@ public class UserService {
 
     }
 
+    public void updateBasicInfo(long id, String fullname, String address, String dt) {
+
+        userRepository.updateBasicInfo(id, fullname, address, dt);
+
+    }
+
     public void updateUsername(long id, String username, String dt) {
 
         userRepository.updateUsername(id, username, dt);

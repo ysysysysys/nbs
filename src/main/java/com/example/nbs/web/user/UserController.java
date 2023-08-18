@@ -2,6 +2,7 @@ package com.example.nbs.web.user;
 
 import com.example.nbs.domain.auth.UserEntity;
 import com.example.nbs.domain.auth.UserService;
+import com.example.nbs.web.Global;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -77,6 +78,9 @@ public class UserController {
         // ユーザー登録情報取得してセット
         model.addAttribute("user", userService.findById(userId));
 
+        // ログインIDをセット
+        model.addAttribute("ownId", Global.userId);
+
         return "user/detail";
 
     }
@@ -97,6 +101,26 @@ public class UserController {
         }
 
         return "user/changeAuthorityForm";
+
+    }
+
+    /**
+     * 基本情報変更フォーム表示
+     */
+    @GetMapping("/changeBasicInfoForm/{userId}")
+    public String showChangeBasicInfoForm(@PathVariable("userId") long userId, Model model) {
+
+        if (!model.containsAttribute("userBasicInfoForm")) {
+
+            UserBasicInfoForm userBasicInfoForm = new UserBasicInfoForm();
+            userBasicInfoForm.setId(userId);
+            userBasicInfoForm.setFullname(userService.findById(userId).getFullname());
+            userBasicInfoForm.setAddress(userService.findById(userId).getAddress());
+            model.addAttribute("userBasicInfoForm", userBasicInfoForm);
+
+        }
+
+        return "user/changeBasicInfoForm";
 
     }
 
@@ -151,6 +175,32 @@ public class UserController {
 
         // リダイレクト先を指定
         URI location = builder.path("/user/" + userAuthorityForm.getId()).build().toUri();
+
+        return "redirect:" + location.toString();
+
+    }
+
+    /**
+     * 基本情報更新
+     */
+    @PostMapping("/changeBasicInfo")
+    public String changeBasicInfo(@Validated @ModelAttribute UserBasicInfoForm userBasicInfoForm, BindingResult bindingResult, Model model, UriComponentsBuilder builder) {
+
+        if (bindingResult.hasErrors()) {
+
+            return showChangeBasicInfoForm(userBasicInfoForm.getId(), model);
+
+        }
+
+        // システム日付取得
+        ZonedDateTime zonedDateTime = ZonedDateTime.now();
+        String dtF2 = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
+
+        // DB反映
+        userService.updateBasicInfo(userBasicInfoForm.getId(), userBasicInfoForm.getFullname(), userBasicInfoForm.getAddress(), dtF2);
+
+        // リダイレクト先を指定
+        URI location = builder.path("/user/" + userBasicInfoForm.getId()).build().toUri();
 
         return "redirect:" + location.toString();
 

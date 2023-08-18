@@ -23,6 +23,9 @@ public interface UserRepository {
     @Update("update nbs.user set authority = #{authority}, updated_datetime = #{dt} where id = #{id}")
     void updateAuthority(long id, String authority, String dt);
 
+    @Update("update nbs.user set fullname = #{fullname}, address = #{address}, updated_datetime = #{dt} where id = #{id}")
+    void updateBasicInfo(long id, String fullname, String address, String dt);
+
     @Update("update nbs.user set username = #{username}, updated_datetime = #{dt} where id = #{id}")
     void updateUsername(long id, String username, String dt);
 
