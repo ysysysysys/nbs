@@ -45,16 +45,22 @@ public class UserService {
 
     }
 
+    public void updateAuthority(long id, String authority, String dt) {
+
+        userRepository.updateAuthority(id, authority, dt);
+
+    }
+
+    public void updateUsername(long id, String username, String dt) {
+
+        userRepository.updateUsername(id, username, dt);
+
+    }
+
     public void updatePassword(long id, String password, String dt) {
 
         var encodedPassword = passwordEncoder.encode(password);
         userRepository.updatePassword(id, encodedPassword, dt);
-
-    }
-
-    public void updateAuthority(long id, String authority, String dt) {
-
-        userRepository.updateAuthority(id, authority, dt);
 
     }
 

@@ -20,13 +20,17 @@ public interface UserRepository {
     @Select("select * from nbs.user where id = #{id}")
     UserEntity findByUserId(long id);
 
-    @Update("update nbs.user set password = #{password}, updated_datetime = #{dt} where id = #{id}")
-    void updatePassword(long id, String password, String dt);
-
     @Update("update nbs.user set authority = #{authority}, updated_datetime = #{dt} where id = #{id}")
     void updateAuthority(long id, String authority, String dt);
+
+    @Update("update nbs.user set username = #{username}, updated_datetime = #{dt} where id = #{id}")
+    void updateUsername(long id, String username, String dt);
+
+    @Update("update nbs.user set password = #{password}, updated_datetime = #{dt} where id = #{id}")
+    void updatePassword(long id, String password, String dt);
 
     @Delete("delete from nbs.user where id = #{id}")
     void delete(long id);
 
 }
+

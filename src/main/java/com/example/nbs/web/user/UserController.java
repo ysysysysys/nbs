@@ -101,6 +101,24 @@ public class UserController {
     }
 
     /**
+     * ユーザー名変更フォーム表示
+     */
+    @GetMapping("/changeUsernameForm/{userId}")
+    public String showChangeUsernameForm(@PathVariable("userId") long userId, Model model) {
+
+        if (!model.containsAttribute("userUsernameForm")) {
+
+            UserUsernameForm userUsernameForm = new UserUsernameForm();
+            userUsernameForm.setId(userId);
+            model.addAttribute("userUsernameForm", userUsernameForm);
+
+        }
+
+        return "user/changeUsernameForm";
+
+    }
+
+    /**
      * パスワード変更フォーム表示
      */
     @GetMapping("/changePasswordForm/{userId}")
@@ -133,6 +151,32 @@ public class UserController {
 
         // リダイレクト先を指定
         URI location = builder.path("/user/" + userAuthorityForm.getId()).build().toUri();
+
+        return "redirect:" + location.toString();
+
+    }
+
+    /**
+     * ユーザー名更新
+     */
+    @PostMapping("/changeUsername")
+    public String changeUsername(@Validated @ModelAttribute UserUsernameForm userUsernameForm, BindingResult bindingResult, Model model, UriComponentsBuilder builder) {
+
+        if (bindingResult.hasErrors()) {
+
+            return showChangeUsernameForm(userUsernameForm.getId(), model);
+
+        }
+
+        // システム日付取得
+        ZonedDateTime zonedDateTime = ZonedDateTime.now();
+        String dtF2 = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
+
+        // DB反映
+        userService.updateUsername(userUsernameForm.getId(), userUsernameForm.getUsername(), dtF2);
+
+        // リダイレクト先を指定
+        URI location = builder.path("/user/" + userUsernameForm.getId()).build().toUri();
 
         return "redirect:" + location.toString();
 
