@@ -176,4 +176,17 @@ public class UserController {
 
     }
 
+    /**
+     * お知らせ削除(物理削除)
+     */
+    @PostMapping("/delete/{userId}")
+    public String delete(@PathVariable("userId") long userId) {
+
+        // DB反映
+        userService.delete(userId);
+
+        return "redirect:/user";
+
+    }
+
 }

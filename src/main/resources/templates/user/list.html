@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{ this :: title},~{ this :: body})}">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{ this :: title},~{ this :: body})}">
 <head>
     <title>ユーザー一覧 | 回覧板</title>
 </head>
@@ -14,16 +15,15 @@
         <th>権限</th>
         <th>世帯主名</th>
         <th>住所</th>
+        <th></th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="user : ${userList}">
-<!--        <td>-->
-<!--            <a href="./detail.html" th:href="@{/notice/{noticeId}(noticeId=${notice.id})}" th:text="${notice.title}">(タイトル)</a>-->
-<!--        </td>-->
         <td th:text="${user.authority}">(権限)</td>
         <td th:text="${user.fullname}">(世帯主名)</td>
         <td th:text="${user.address}">(住所)</td>
+        <td><a href="./detail.html" th:href="@{/user/{userId}(userId=${user.id})}">編集></a></td>
     </tr>
     </tbody>
 </table>

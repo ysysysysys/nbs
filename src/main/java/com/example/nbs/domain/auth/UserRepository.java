@@ -1,9 +1,6 @@
 package com.example.nbs.domain.auth;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,5 +25,8 @@ public interface UserRepository {
 
     @Update("update nbs.user set authority = #{authority}, updated_datetime = #{dt} where id = #{id}")
     void updateAuthority(long id, String authority, String dt);
+
+    @Delete("delete from nbs.user where id = #{id}")
+    void delete(long id);
 
 }
