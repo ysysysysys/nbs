@@ -39,7 +39,7 @@ public class indexController {
     @GetMapping("/logout")
     public String showLogoutForm() {
 
-        return "/logout";
+        return "login";
 
     }
 }

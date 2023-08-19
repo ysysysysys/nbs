@@ -225,10 +225,7 @@ public class UserController {
         // DB反映
         userService.updateUsername(userUsernameForm.getId(), userUsernameForm.getUsername(), dtF2);
 
-        // リダイレクト先を指定
-        URI location = builder.path("/user/" + userUsernameForm.getId()).build().toUri();
-
-        return "redirect:" + location.toString();
+        return "logout";
 
     }
 
@@ -263,10 +260,7 @@ public class UserController {
         // DB反映
         userService.updatePassword(userPasswordForm.getId(), userPasswordForm.getPasswordNew(), dtF2);
 
-        // リダイレクト先を指定
-        URI location = builder.path("/user/" + userPasswordForm.getId()).build().toUri();
-
-        return "redirect:" + location.toString();
+        return "logout";
 
     }
 
