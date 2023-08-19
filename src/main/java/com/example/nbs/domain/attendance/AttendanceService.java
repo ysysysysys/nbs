@@ -38,4 +38,10 @@ public class AttendanceService {
 
     }
 
+    public List<ReplyDto> findByNoticeIdReply(long noticeId) {
+
+        return attendanceRepository.findByNoticeIdReply(noticeId);
+
+    }
+
 }
