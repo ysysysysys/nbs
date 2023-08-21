@@ -7,14 +7,16 @@
 </head>
 <body>
 <h1 class="mt-3">返答確認一覧</h1>
-<h2 class="mt-3" th:text="${noticeTitle}">(タイトル)</h2>
-<a href="../index.html" th:href="@{/}">HOME</a>
+<h2 class="mt-3" th:text="${replyForm.noticeTitle}">(タイトル)</h2>
+<span th:text="'全体数 : ' + ${replyForm.numberOfUsers}">(全体数)</span>
+<span th:text="'出席数 : ' + ${replyForm.numberOfAttendance}">(出席数)</span>
+<span th:text="'出席率 : ' + ${replyForm.rate} + '%'">(%)</span>
 
 <table class="table table-hover">
     <tbody>
     <tr th:each="attendance : ${attendanceList}">
         <td th:text="${attendance.fullname}">(名前)</td>
-        <td th:text="${attendance.reply}">(参加不参加)</td>
+        <td th:text="${attendance.reply}">(出席欠席)</td>
     </tr>
     </tbody>
 </table>

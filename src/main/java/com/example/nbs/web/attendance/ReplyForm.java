@@ -5,7 +5,12 @@ import lombok.Data;
 @Data
 public class ReplyForm {
 
-    private String fullname;
-    private String reply;
+    private String noticeTitle;
+
+    private long numberOfAttendance;
+
+    private long numberOfUsers;
+
+    private double rate;
 
 }
