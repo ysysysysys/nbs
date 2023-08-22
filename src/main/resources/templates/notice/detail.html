@@ -68,10 +68,33 @@
         <a href="./editForm.html" th:href="@{/notice/editForm/{noticeId}(noticeId=${notice.id})}">
             <button class="btn btn-secondary">編集</button>
         </a>
-        <form action="#" th:action="@{/notice/delete/{noticeId}(noticeId=${notice.id})}" th:method="post"
-              th:object="${noticeForm}" enctype="multipart/form-data">
-            <button type="submit" class="btn btn-danger">削除</button>
-        </form>
+
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+            削除
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel"><i class="bi bi-exclamation-circle me-2"></i>確認</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>削除してよろしいですか？削除した記事は復旧できません。</p>
+                    </div>
+                    <div class="modal-footer">
+                        <form action="#" th:action="@{/notice/delete/{noticeId}(noticeId=${notice.id})}" th:method="post"
+                              th:object="${noticeForm}" enctype="multipart/form-data">
+                            <button type="submit" class="btn btn-primary">OK</button>
+                        </form>
+                        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">キャンセル</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
