@@ -4,7 +4,16 @@
     <title>お知らせ編集 | 回覧板</title>
 </head>
 <body>
-<h1 class="mt-3">お知らせ編集</h1>
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb mt-3">
+        <li class="breadcrumb-item"><a href="#" th:href="@{/}">TOP</a></li>
+        <li class="breadcrumb-item"><a href="#" th:href="@{/notice}">お知らせ一覧</a></li>
+        <li class="breadcrumb-item"><a href="#" onclick="history.back(-1);return false;">お知らせ詳細</a></li>
+        <li class="breadcrumb-item active" aria-current="page">お知らせ編集</li>
+    </ol>
+</nav>
+
+<h1 class="mt-5">お知らせ編集</h1>
 <form action="?" th:method="post" th:object="${noticeForm}" enctype="multipart/form-data">
     <div class="mt-3">
         <label for="titleInput" class="form-label">タイトル</label>
@@ -64,7 +73,7 @@
         </div>
     </div>
 
-    <div class="mt-3">
+    <div class="mt-5">
         <button type="submit" class="btn btn-secondary" th:formaction="@{/draft/save}">下書き保存</button>
         <button type="submit" class="btn btn-primary" th:formaction="@{/notice/edit}">公開</button>
     </div>

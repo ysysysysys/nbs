@@ -1,10 +1,21 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{ this :: title},~{ this :: body})}">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+      th:replace="~{fragments/layout :: layout(~{ this :: title},~{ this :: body})}">
 <head>
     <title>ユーザー名変更 | 回覧板</title>
 </head>
 <body>
-<h1 class="mt-3">ユーザー名変更</h1>
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb mt-3">
+        <li class="breadcrumb-item"><a href="#" th:href="@{/}">TOP</a></li>
+        <li class="breadcrumb-item" sec:authorize="hasAuthority('ADMIN')"><a href="#" th:href="@{/user}">ユーザー一覧</a></li>
+        <li class="breadcrumb-item"><a href="#" onclick="history.back(-1);return false;">登録情報</a></li>
+        <li class="breadcrumb-item active" aria-current="page">ユーザー名変更</li>
+    </ol>
+</nav>
+
+<h1 class="mt-5">ユーザー名変更</h1>
 <form action="#" th:action="@{/user/changeUsername}" method="post" th:object="${userUsernameForm}">
     <input type="hidden" id="id" th:field="*{id}"/>
     <div class="mt-3">
@@ -13,7 +24,7 @@
                th:classappend="${#fields.hasErrors('username')} ? is-invalid">
         <p class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">(errors)</p>
     </div>
-    <div class="mt-3">
+    <div class="mt-5">
         <button type="submit" class="btn btn-primary">変更する</button>
         <a href="./detail.html" th:href="@{/user/{userId}(userId=${userUsernameForm.id})}" class="btn btn-secondary">キャンセル</a>
     </div>

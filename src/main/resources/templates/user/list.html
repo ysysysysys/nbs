@@ -5,10 +5,19 @@
     <title>ユーザー一覧 | 回覧板</title>
 </head>
 <body>
-<h1 class="mt-3">ユーザー一覧</h1>
-<a href="./creationForm.html" th:href="@{/user/creationForm}">
-    <button class="btn btn-primary"><i class="bi bi-person-plus me-2"></i>新規</button>
-</a>
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb mt-3">
+        <li class="breadcrumb-item"><a href="#" th:href="@{/}">TOP</a></li>
+        <li class="breadcrumb-item active" aria-current="page">ユーザー一覧</li>
+    </ol>
+</nav>
+
+<h1 class="mt-5">ユーザー一覧</h1>
+<div class="mt-3">
+    <a href="./creationForm.html" th:href="@{/user/creationForm}">
+        <button class="btn btn-primary"><i class="bi bi-person-plus me-2"></i>新規</button>
+    </a>
+</div>
 
 <table class="table table-hover">
     <thead>

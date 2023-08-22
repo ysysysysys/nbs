@@ -6,7 +6,15 @@
     <title>出席確認一覧 | 回覧板</title>
 </head>
 <body>
-<h1 class="mt-3">出席確認一覧</h1>
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb mt-3">
+        <li class="breadcrumb-item"><a href="#" th:href="@{/}">TOP</a></li>
+        <li class="breadcrumb-item"><a href="#" th:href="@{/notice}">お知らせ一覧</a></li>
+        <li class="breadcrumb-item active" aria-current="page">出席確認一覧</li>
+    </ol>
+</nav>
+
+<h1 class="mt-5">出席確認一覧</h1>
 <h2 class="mt-3" th:text="${replyForm.noticeTitle}">(タイトル)</h2>
 
 <ul class="list-group list-group-horizontal list-group-item-primary mt-4">

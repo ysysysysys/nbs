@@ -140,6 +140,8 @@ public class UserController {
     @GetMapping("/changeUsernameForm/{userId}")
     public String showChangeUsernameForm(@PathVariable("userId") long userId, Model model) {
 
+        model.addAttribute("loginId", Global.userId);
+
         if (!model.containsAttribute("userUsernameForm")) {
 
             UserUsernameForm userUsernameForm = new UserUsernameForm();
@@ -157,6 +159,8 @@ public class UserController {
      */
     @GetMapping("/changePasswordForm/{userId}")
     public String showChangePasswordForm(@PathVariable("userId") long userId, Model model) {
+
+        model.addAttribute("loginId", Global.userId);
 
         if (!model.containsAttribute("userPasswordForm")) {
 
