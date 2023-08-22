@@ -3,19 +3,13 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
       th:replace="~{fragments/layout :: layout(~{ this :: title},~{ this :: body})}">
 <head>
-    <title>HOME | 回覧板</title>
+    <title>TOP | 回覧板</title>
 </head>
 <body>
 <h1 class="mt-3"></h1>
 <ul>
     <li><a href="./notice/list.html" th:href="@{/notice}">お知らせ一覧</a></li>
     <li sec:authorize="hasAuthority('ADMIN')"><a href="./user/list.html" th:href="@{/user}">ユーザー一覧</a></li>
-    <li><a href="./user/detail.html" th:href="@{/user/{userId}(userId=${id})}">登録情報</a></li>
-    <li>
-        <form id="logoutForm" th:action="@{/logout}" method="POST">
-            <button type="submit" class="btn btn-link">ログアウト</button>
-        </form>
-    </li>
 </ul>
 </body>
 </html>

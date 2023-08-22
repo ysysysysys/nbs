@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-public class NoticeDetailDto {
+public class NoticeListForUserDto {
 
     private long id;
     private String title;

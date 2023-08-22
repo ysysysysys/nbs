@@ -1,8 +1,8 @@
 package com.example.nbs.web.notice;
 
 import com.example.nbs.domain.attendance.AttendanceService;
-import com.example.nbs.domain.notice.NoticeDetailDto;
 import com.example.nbs.domain.notice.NoticeEntity;
+import com.example.nbs.domain.notice.NoticeListForUserDto;
 import com.example.nbs.domain.notice.NoticeService;
 import com.example.nbs.web.Global;
 import com.example.nbs.web.attendance.AttendanceForm;
@@ -47,11 +47,17 @@ public class NoticeController {
     @GetMapping
     public String showList(Model model) {
 
-        List<NoticeEntity> noticeList = noticeService.findAll();
+        model.addAttribute("loginId", Global.userId);
 
-        List<NoticeDetailDto> noticeDetailDtoList = noticeService.toNoticeDetailDtoList(noticeList);
+        if (Global.authority == "ADMIN") {
+            List<NoticeEntity> noticeList = noticeService.findAll();
+            model.addAttribute("noticeList", noticeList);
 
-        model.addAttribute("noticeList", noticeDetailDtoList);
+        } else {
+            List<NoticeListForUserDto> noticeListForUserDto = noticeService.toNoticeListForUserDto(noticeService.findAll());
+            model.addAttribute("noticeList", noticeListForUserDto);
+
+        }
 
         return "notice/list";
 
@@ -62,6 +68,8 @@ public class NoticeController {
      */
     @GetMapping("/creationForm")
     public String showCreationForm(Model model) {
+
+        model.addAttribute("loginId", Global.userId);
 
         Global.h1 = "お知らせ作成";
 
@@ -119,6 +127,8 @@ public class NoticeController {
     @GetMapping("/{noticeId}")
     public String showDetail(@PathVariable("noticeId") long noticeId, Model model) {
 
+        model.addAttribute("loginId", Global.userId);
+
         // お知らせ詳細取得してセット
         model.addAttribute("notice", noticeService.findById(noticeId));
 
@@ -159,6 +169,8 @@ public class NoticeController {
      */
     @GetMapping("/editForm/{noticeId}")
     public String showEditForm(@PathVariable("noticeId") long noticeId, Model model, HttpSession session) {
+
+        model.addAttribute("loginId", Global.userId);
 
         Global.h1 = "お知らせ編集";
 

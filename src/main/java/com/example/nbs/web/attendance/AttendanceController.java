@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -50,10 +49,12 @@ public class AttendanceController {
     @GetMapping("/attendance/{noticeId}")
     public String showList(@PathVariable("noticeId") long noticeId, @ModelAttribute ReplyForm replyForm, Model model) {
 
+        model.addAttribute("loginId", Global.userId);
+
         replyForm.setNoticeTitle(noticeService.findById(noticeId).getTitle());
         replyForm.setNumberOfAttendance(attendanceService.findByNoticeIdReply(noticeId).stream().filter(i -> i.getReply().equals("出席")).count());
         replyForm.setNumberOfUsers(userService.findAll().stream().count());
-        replyForm.setRate((double)replyForm.getNumberOfAttendance() / (double)replyForm.getNumberOfUsers() * 100);
+        replyForm.setRate((double) replyForm.getNumberOfAttendance() / (double) replyForm.getNumberOfUsers() * 100);
         model.addAttribute("replyForm", replyForm);
 
         model.addAttribute("attendanceList", attendanceService.findByNoticeIdReply(noticeId));

@@ -31,6 +31,8 @@ public class UserController {
     @GetMapping
     public String showList(Model model) {
 
+        model.addAttribute("loginId", Global.userId);
+
         model.addAttribute("userList", userService.findAll());
 
         return "user/list";
@@ -40,7 +42,9 @@ public class UserController {
      * ユーザー作成フォーム表示
      */
     @GetMapping("/creationForm")
-    public String showCreationForm(@ModelAttribute UserForm form) {
+    public String showCreationForm(@ModelAttribute UserForm form, Model model) {
+
+        model.addAttribute("loginId", Global.userId);
 
         // 権限のデフォルト設定(user/creationForm.htmlでラジオボタンのcheckedが効かないため、コントローラー側から初期値を渡す。)
         form.setAuthority(UserEntity.Authority.USER.name());
@@ -53,10 +57,10 @@ public class UserController {
      * ユーザー登録
      */
     @PostMapping
-    public String create(@Validated UserForm form, BindingResult bindingResult) {
+    public String create(@Validated UserForm form, BindingResult bindingResult, Model model) {
 
         if (bindingResult.hasErrors()) {
-            return showCreationForm(form);
+            return showCreationForm(form, model);
         }
 
         // システム日付取得
@@ -75,6 +79,8 @@ public class UserController {
     @GetMapping("/{userId}")
     public String showDetail(@PathVariable("userId") long userId, Model model) {
 
+        model.addAttribute("loginId", Global.userId);
+
         // ユーザー登録情報取得してセット
         model.addAttribute("user", userService.findById(userId));
 
@@ -90,6 +96,8 @@ public class UserController {
      */
     @GetMapping("/changeAuthorityForm/{userId}")
     public String showChangeAuthorityForm(@PathVariable("userId") long userId, Model model) {
+
+        model.addAttribute("loginId", Global.userId);
 
         if (!model.containsAttribute("userAuthorityForm")) {
 
@@ -109,6 +117,8 @@ public class UserController {
      */
     @GetMapping("/changeBasicInfoForm/{userId}")
     public String showChangeBasicInfoForm(@PathVariable("userId") long userId, Model model) {
+
+        model.addAttribute("loginId", Global.userId);
 
         if (!model.containsAttribute("userBasicInfoForm")) {
 

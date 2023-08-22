@@ -43,6 +43,8 @@ public class DraftController {
     @GetMapping("/list")
     public String showList(Model model) {
 
+        model.addAttribute("loginId", Global.userId);
+
         List<NoticeEntity> noticeList = draftService.findAll();
         model.addAttribute("noticeList", noticeList);
 
@@ -109,6 +111,8 @@ public class DraftController {
     @GetMapping("/{noticeId}")
     public String showDetail(@PathVariable("noticeId") long noticeId, Model model) {
 
+        model.addAttribute("loginId", Global.userId);
+
         model.addAttribute("notice", draftService.findById(noticeId));
 
         // 一時フォルダクリア
@@ -131,6 +135,8 @@ public class DraftController {
      */
     @GetMapping("/editForm/{noticeId}")
     public String showEditForm(@PathVariable("noticeId") long noticeId, Model model, HttpSession session) {
+
+        model.addAttribute("loginId", Global.userId);
 
         Global.h1 = "お知らせ編集";
 

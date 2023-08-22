@@ -9,20 +9,27 @@
 <table class="table table-hover">
     <thead>
     <tr>
+        <th></th>
         <th>タイトル</th>
         <th>内容</th>
         <th>返答依頼</th>
         <th>更新日時</th>
-        <th></th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="notice : ${noticeList}">
+        <td><a href="./detail.html" th:href="@{/draft/{noticeId}(noticeId=${notice.id})}" class="text-decoration-none"><i class="bi bi-info-circle me-2"></i>詳細</a></td>
         <td th:text="${notice.title}">(タイトル)</td>
         <td th:text="${notice.contents}">(内容)</td>
-        <td th:text="${notice.request_for_reply}">(返答依頼)</td>
+
+        <div th:if="${notice.request_for_reply eq 1}">
+            <td><i class="bi bi-check2-circle me-2"></i>あり</a></td>
+        </div>
+        <div th:if="${notice.request_for_reply eq 0}">
+            <td></td>
+        </div>
+
         <td th:text="${notice.updated_datetime}">(更新日時)</td>
-        <td><a href="./detail.html" th:href="@{/draft/{noticeId}(noticeId=${notice.id})}">詳細></a></td>
     </tr>
     </tbody>
 </table>

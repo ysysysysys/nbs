@@ -86,68 +86,41 @@ public class NoticeService {
 
     }
 
-    public List<NoticeDetailDto> toNoticeDetailDtoList(List<NoticeEntity> noticeList) {
+    public List<NoticeListForUserDto> toNoticeListForUserDto(List<NoticeEntity> noticeList) {
 
-        NoticeDetailDto noticeDetailDto;
-        List<NoticeDetailDto> noticeDetailDtoList = new ArrayList<NoticeDetailDto>();
+        NoticeListForUserDto noticeListForUserDto;
+        List<NoticeListForUserDto> noticeListForUserDtoList = new ArrayList<NoticeListForUserDto>();
 
-        if (Global.authority == "ADMIN") {
+        for (int i = 0; i < noticeList.size(); i++) {
 
-            for (int i = 0; i < noticeList.size(); i++) {
+            noticeListForUserDto = new NoticeListForUserDto();
 
-                noticeDetailDto = new NoticeDetailDto();
+            noticeListForUserDto.setId(noticeList.get(i).getId());
+            noticeListForUserDto.setTitle(noticeList.get(i).getTitle());
+            noticeListForUserDto.setContents(noticeList.get(i).getContents());
 
-                noticeDetailDto.setId(noticeList.get(i).getId());
-                noticeDetailDto.setTitle(noticeList.get(i).getTitle());
-                noticeDetailDto.setContents(noticeList.get(i).getContents());
+            if (0 == noticeList.get(i).getRequest_for_reply()) {
 
-                if (0 == noticeList.get(i).getRequest_for_reply()) {
+                noticeListForUserDto.setRequest_for_reply("");
 
-                    noticeDetailDto.setRequest_for_reply("");
+            } else {
+
+                if (0 == attendanceService.existAttendance(noticeList.get(i).getId(), Global.userId)) {
+                    noticeListForUserDto.setRequest_for_reply("【未送信】");
 
                 } else {
-
-                    noticeDetailDto.setRequest_for_reply("【あり】");
+                    noticeListForUserDto.setRequest_for_reply("【送信済】");
 
                 }
 
-                noticeDetailDto.setUpdated_datetime(noticeList.get(i).getUpdated_datetime());
-
-                noticeDetailDtoList.add(noticeDetailDto);
             }
+            noticeListForUserDto.setUpdated_datetime(noticeList.get(i).getUpdated_datetime());
 
-        } else {
-
-            for (int i = 0; i < noticeList.size(); i++) {
-
-                noticeDetailDto = new NoticeDetailDto();
-
-                noticeDetailDto.setId(noticeList.get(i).getId());
-                noticeDetailDto.setTitle(noticeList.get(i).getTitle());
-                noticeDetailDto.setContents(noticeList.get(i).getContents());
-
-                if (0 == noticeList.get(i).getRequest_for_reply()) {
-
-                    noticeDetailDto.setRequest_for_reply("");
-
-                } else {
-
-                    if (0 == attendanceService.existAttendance(noticeList.get(i).getId(), Global.userId)) {
-                        noticeDetailDto.setRequest_for_reply("【未送信】");
-
-                    } else {
-                        noticeDetailDto.setRequest_for_reply("【送信済】");
-
-                    }
-
-                }
-                noticeDetailDto.setUpdated_datetime(noticeList.get(i).getUpdated_datetime());
-
-                noticeDetailDtoList.add(noticeDetailDto);
-            }
-
+            noticeListForUserDtoList.add(noticeListForUserDto);
         }
-        return noticeDetailDtoList;
+
+        return noticeListForUserDtoList;
+
     }
 
 }

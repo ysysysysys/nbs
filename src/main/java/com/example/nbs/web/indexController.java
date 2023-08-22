@@ -23,7 +23,7 @@ public class indexController {
 
         Global.userId = userService.toUserId(principal.getUsername());
 
-        model.addAttribute("id",Global.userId);
+        model.addAttribute("loginId", Global.userId);
 
         return "index";
 
@@ -42,4 +42,5 @@ public class indexController {
         return "login";
 
     }
+
 }
