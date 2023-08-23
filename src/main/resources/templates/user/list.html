@@ -19,23 +19,25 @@
     </a>
 </div>
 
-<table class="table table-hover">
-    <thead>
-    <tr>
-        <th></th>
-        <th>権限</th>
-        <th>世帯主名</th>
-        <th>住所</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="user : ${userList}">
-        <td><a href="./detail.html" th:href="@{/user/{userId}(userId=${user.id})}"><i class="bi bi-person-gear me-2"></i>編集</a></td>
-        <td th:text="${user.authority}">(権限)</td>
-        <td th:text="${user.fullname}">(世帯主名)</td>
-        <td th:text="${user.address}">(住所)</td>
-    </tr>
-    </tbody>
-</table>
+<div class="table-responsive-xxl mt-5">
+    <table class="table text-nowrap table-hover">
+        <thead>
+        <tr>
+            <th></th>
+            <th>権限</th>
+            <th>世帯主名</th>
+            <th>住所</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${userList}">
+            <td><a href="./detail.html" th:href="@{/user/{userId}(userId=${user.id})}"><i class="bi bi-person-gear me-2"></i>編集</a></td>
+            <td th:text="${user.authority}">(権限)</td>
+            <td th:text="${user.fullname}">(世帯主名)</td>
+            <td th:text="${user.address}" style="white-space:pre-wrap; word-wrap:break-word;">(住所)</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 </body>
 </html>

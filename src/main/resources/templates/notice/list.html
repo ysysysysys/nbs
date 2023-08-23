@@ -25,34 +25,36 @@
         <li><a class="dropdown-item" href="../draft/list.html" th:href="@{/draft/list}">下書き一覧</a></li>
     </ul>
 </div>
-<table class="table table-hover mt-5">
-    <thead>
-    <tr>
-        <th></th>
-        <th>タイトル</th>
-        <th>内容</th>
-        <th>返答依頼</th>
-        <th>更新日時</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="notice : ${noticeList}">
-        <td><a href="./detail.html" th:href="@{/notice/{noticeId}(noticeId=${notice.id})}" class="text-decoration-none"><i class="bi bi-info-circle me-2"></i>詳細</a></td>
-        <td th:text="${notice.title}">(タイトル)</td>
-        <td th:text="${notice.contents}">(内容)</td>
+<div class="table-responsive-xxl mt-5">
+    <table class="table text-nowrap table-hover">
+        <thead>
+        <tr>
+            <th></th>
+            <th>タイトル</th>
+            <th>内容</th>
+            <th>返答依頼</th>
+            <th>更新日時</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="notice : ${noticeList}">
+            <td><a href="./detail.html" th:href="@{/notice/{noticeId}(noticeId=${notice.id})}" class="text-decoration-none"><i class="bi bi-info-circle me-2"></i>詳細</a></td>
+            <td th:text="${notice.title}">(タイトル)</td>
+            <td th:text="${notice.contents}" style="white-space:pre-wrap; word-wrap:break-word;">(内容)</td>
 
-        <div th:if="${notice.request_for_reply eq 1}">
-        <td sec:authorize="hasAuthority('ADMIN')"><a href="#" th:href="@{/attendance/{noticeId}(noticeId=${notice.id})}" class="text-decoration-none"><i class="bi bi-check2-circle me-2"></i>あり</a></td>
-        </div>
-        <div th:if="${notice.request_for_reply eq 0}">
-            <td sec:authorize="hasAuthority('ADMIN')"></td>
-        </div>
+            <div th:if="${notice.request_for_reply eq 1}">
+            <td sec:authorize="hasAuthority('ADMIN')"><a href="#" th:href="@{/attendance/{noticeId}(noticeId=${notice.id})}" class="text-decoration-none"><i class="bi bi-check2-circle me-2"></i>あり</a></td>
+            </div>
+            <div th:if="${notice.request_for_reply eq 0}">
+                <td sec:authorize="hasAuthority('ADMIN')"></td>
+            </div>
 
-        <td sec:authorize="hasAuthority('USER')" th:text="${notice.request_for_reply}">(返答依頼)</a></td>
+            <td sec:authorize="hasAuthority('USER')" th:text="${notice.request_for_reply}">(返答依頼)</a></td>
 
-        <td th:text="${notice.updated_datetime}">(更新日時)</td>
-    </tr>
-    </tbody>
-</table>
+            <td th:text="${notice.updated_datetime}">(更新日時)</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 </body>
 </html>
