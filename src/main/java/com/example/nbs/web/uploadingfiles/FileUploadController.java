@@ -4,14 +4,12 @@ import com.example.nbs.web.Global;
 import com.example.nbs.web.notice.NoticeForm;
 import com.example.nbs.web.uploadingfiles.storage.StorageFileNotFoundException;
 import com.example.nbs.web.uploadingfiles.storage.StorageService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -40,21 +38,7 @@ public class FileUploadController {
      * アップロードファイル一覧表示
      */
     @GetMapping("/formAfterUpdate")
-    public String listUploadedFiles(Model model, HttpSession session) throws IOException {
-
-        // セッション属性からフォームデータを取得
-        String title = (String) session.getAttribute("title");
-        String contents = (String) session.getAttribute("contents");
-        Integer request_for_reply = (Integer) session.getAttribute("request_for_reply");
-
-        // NoticeFormの新しいインスタンスを作成し、取得したデータを設定
-        NoticeForm noticeForm = new NoticeForm();
-        noticeForm.setTitle(title);
-        noticeForm.setContents(contents);
-        noticeForm.setRequest_for_reply(request_for_reply);
-
-        // NoticeFormをモデルに追加
-        model.addAttribute("noticeForm", noticeForm);
+    public String listUploadedFiles(Model model) throws IOException {
 
         // アップロードされたファイルをモデルに追加
         model.addAttribute("files", storageService.loadAll().map(
@@ -62,7 +46,7 @@ public class FileUploadController {
                         "serveFile", path.getFileName().toString()).build().toUri().toString()).collect(Collectors.toList()));
 
 
-        return (Global.h1.equals("お知らせ作成")) ? "notice/creationForm":"notice/editForm";
+        return (Global.h1.equals("お知らせ作成")) ? "notice/creationForm" : "notice/editForm";
 
     }
 
@@ -75,31 +59,56 @@ public class FileUploadController {
 
         Resource file = storageService.loadAsResource(filename);
 
+        // 拡張子を取得
+        String extension = filename.substring(filename.lastIndexOf(".")).replace(".", "");
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentDisposition(ContentDisposition.builder("inline")
                 .filename(file.getFilename())
                 .build());
-        headers.setContentType(MediaType.APPLICATION_PDF);
+
+        switch (extension.toUpperCase()) {
+            case "PDF":
+                headers.setContentType(MediaType.APPLICATION_PDF);
+                break;
+            case "JPG", "JPEG":
+                headers.setContentType(MediaType.IMAGE_JPEG);
+                break;
+            default:
+        }
 
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(file);
+
     }
 
     /**
      * ファイルアップロード(一時フォルダに格納)
      */
     @PostMapping("/upload")
-    public String handleFileUpload(@RequestParam("file") MultipartFile file, @ModelAttribute("noticeForm") NoticeForm noticeForm, RedirectAttributes redirectAttributes, HttpSession session) throws IOException {
+    public String handleFileUpload(@RequestParam("file") MultipartFile file, @ModelAttribute("noticeForm") NoticeForm noticeForm, RedirectAttributes redirectAttributes) throws IOException {
 
-        storageService.store(file);
-        redirectAttributes.addFlashAttribute("message",
-                "You successfully uploaded " + file.getOriginalFilename() + "!");
+        if (!file.getOriginalFilename().equals("")) {
 
-        // ファイルのアップロードした後、 セッション属性にフォーム・データを格納
-        session.setAttribute("title", noticeForm.getTitle());
-        session.setAttribute("contents", noticeForm.getContents());
-        session.setAttribute("request_for_reply", noticeForm.getRequest_for_reply());
+            if (file.getContentType().equals(MediaType.APPLICATION_PDF.toString()) || file.getContentType().equals(MediaType.IMAGE_JPEG.toString())) {
+
+                storageService.store(file);
+                redirectAttributes.addFlashAttribute("message",
+                        "正常にアップロードされました。 (" + file.getOriginalFilename() + ")");
+
+
+            } else {
+
+                redirectAttributes.addFlashAttribute("errorMessage",
+                        "PDFファイル(.pdf)、もしくは画像(.JPG)を選択してください。");
+
+            }
+
+        }
+
+        // noticeFormを渡す
+        redirectAttributes.addFlashAttribute("noticeForm", noticeForm);
 
         return "redirect:/formAfterUpdate";
 
@@ -109,7 +118,7 @@ public class FileUploadController {
      * アップロード取り消し(一時フォルダから削除)
      */
     @PostMapping("/cancel")
-    public String handleFileCancel(@RequestParam(value = "selectedFiles", required = false) List<String> selectedFiles, @ModelAttribute("noticeForm") NoticeForm noticeForm, HttpSession session) throws IOException {
+    public String handleFileCancel(@RequestParam(value = "selectedFiles", required = false) List<String> selectedFiles, @ModelAttribute("noticeForm") NoticeForm noticeForm, RedirectAttributes redirectAttributes) throws IOException {
 
         if (selectedFiles != null && !selectedFiles.isEmpty()) {
 
@@ -137,10 +146,8 @@ public class FileUploadController {
 
         }
 
-        // ファイルの削除した後、 セッション属性にフォーム・データを格納
-        session.setAttribute("title", noticeForm.getTitle());
-        session.setAttribute("contents", noticeForm.getContents());
-        session.setAttribute("request_for_reply", noticeForm.getRequest_for_reply());
+        // noticeFormを渡す
+        redirectAttributes.addFlashAttribute("noticeForm", noticeForm);
 
         return "redirect:/formAfterUpdate";
 
