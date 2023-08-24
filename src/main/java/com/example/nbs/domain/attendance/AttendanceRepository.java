@@ -18,7 +18,7 @@ public interface AttendanceRepository {
     @Select("select * from nbs.attendance where notice_id = #{noticeId}")
     AttendanceEntity findByNoticeId(long noticeId);
 
-    @Select("select count(*) from nbs.attendance where notice_id = #{noticeId} and user_id = #{userId}")
+    @Select("select count(notice_id) from nbs.attendance where notice_id = #{noticeId} and user_id = #{userId}")
     int count(long noticeId, long userId);
 
     @Select("select u.fullname,(case a.attendance_check when 1 then '出席' else '欠席' end) as reply from nbs.user u left join nbs.attendance a on u.id = a.user_id and a.notice_id = #{noticeId}")
