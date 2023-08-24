@@ -7,14 +7,14 @@
 <body>
 <h1 class="mt-3"></h1>
 <div th:if="${param.error}">
-    <p>ユーザー名もしくはパスワードが違います</p>
+    <p class="text-danger">ユーザー名もしくはパスワードが違います。</p>
 </div>
 <form acction="#" th:action="@{/login}" method="post">
-    <div class="mt-3">
+    <div class="mt-3 col-md-4">
         <label for="usernameInput" class="form-label">ユーザー名</label>
         <input type="text" id="usernameInput" name="username" class="form-control">
     </div>
-    <div class="mt-3">
+    <div class="mt-3 col-md-4">
         <label for="passwordInput" class="form-label">パスワード</label>
         <input type="password" id="passwordInput" name="password" class="form-control">
     </div>

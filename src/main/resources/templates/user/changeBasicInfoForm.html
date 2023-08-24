@@ -18,7 +18,7 @@
 <h1 class="mt-5">基本情報変更</h1>
 <form action="#" th:action="@{/user/changeBasicInfo}" method="post" th:object="${userBasicInfoForm}">
     <input type="hidden" id="id" th:field="*{id}"/>
-    <div class="mt-3">
+    <div class="mt-3 col-md-8">
         <label for="fullnameInput" class="form-label">名前</label>
         <input type="text" id="fullnameInput" class="form-control" th:field="*{fullname}"
                th:classappend="${#fields.hasErrors('fullname')} ? is-invalid">

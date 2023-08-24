@@ -14,14 +14,14 @@
 
 <h1 class="mt-5">お知らせ作成</h1>
 <form action="?" th:method="post" th:object="${noticeForm}" enctype="multipart/form-data">
-    <div class="mt-3">
+    <div class="mt-3 col-md-6">
         <label for="titleInput" class="form-label">タイトル</label>
         <input type="text" id="titleInput" th:field="*{title}" class="form-control" th:classappend="${#fields.hasErrors('title')} ? is-invalid" th:value="${title}">
         <p class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">(error)</p>
     </div>
-    <div class="mt-3">
+    <div class="mt-3 col-md-6">
         <label for="contentsInput" class="form-label">内容</label>
-        <textarea id="contentsInput" row="10" th:field="*{contents}" class="form-control" th:classappend="${#fields.hasErrors('contents')} ? is-invalid" th:text="${contents}"></textarea>
+        <textarea id="contentsInput" rows="5" th:field="*{contents}" class="form-control" th:classappend="${#fields.hasErrors('contents')} ? is-invalid" th:text="${contents}"></textarea>
         <p class="invalid-feedback" th:if="${#fields.hasErrors('contents')}" th:errors="*{contents}">(error)</p>
     </div>
 
