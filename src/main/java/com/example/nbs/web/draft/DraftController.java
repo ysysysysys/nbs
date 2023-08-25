@@ -87,7 +87,7 @@ public class DraftController {
         fileSystemStorageService.updateFile(String.valueOf(noticeId) + "_draft");
 
         // DB反映
-        draftService.save(noticeId, form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), dtF2);
+        draftService.save(noticeId, form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), Global.userId, dtF2);
 
         // セッションクリア
         Enumeration en = session.getAttributeNames();

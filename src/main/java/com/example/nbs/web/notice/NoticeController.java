@@ -115,7 +115,7 @@ public class NoticeController {
         }
 
         // DB反映
-        noticeService.create(Long.parseLong(dtF1), form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), dtF2);
+        noticeService.create(Long.parseLong(dtF1), form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), Global.userId, dtF2);
 
         return "redirect:/notice";
 
@@ -226,7 +226,7 @@ public class NoticeController {
         fileSystemStorageService.updateFile(String.valueOf(noticeId));
 
         // DB反映
-        noticeService.update(noticeId, form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), dtF2);
+        noticeService.update(noticeId, form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), Global.userId, dtF2);
 
         // セッションクリア
         Enumeration en = session.getAttributeNames();

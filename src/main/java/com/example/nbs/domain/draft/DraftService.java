@@ -24,12 +24,12 @@ public class DraftService {
     }
 
     @Transactional
-    public void save(long id, String title, String contents, List<Path> filename, int request_for_reply, String dt) {
+    public void save(long id, String title, String contents, List<Path> filename, int request_for_reply, long loginId, String dt) {
 
         if (draftNoticeRepository.findByDraftId(id) == null) {
 
             // 登録
-            draftNoticeRepository.insert(id, title, contents, request_for_reply, dt);
+            draftNoticeRepository.insert(id, title, contents, request_for_reply, loginId, dt);
 
             for (int i = 0; i < filename.size(); i++) {
                 draftFileRepository.insert(id, filename.get(i).getFileName().toString(), dt);
@@ -38,7 +38,7 @@ public class DraftService {
         } else {
 
             // 更新
-            draftNoticeRepository.update(id, title, contents, request_for_reply, dt);
+            draftNoticeRepository.update(id, title, contents, request_for_reply, loginId, dt);
 
             draftFileRepository.delete(id);
 

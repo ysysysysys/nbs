@@ -28,19 +28,13 @@ public class NoticeService {
     }
 
     @Transactional
-    public void create(long id, String title, String contents, List<Path> filename, int request_for_reply, String dt) {
+    public void create(long id, String title, String contents, List<Path> filename, int request_for_reply, long loginId, String dt) {
 
-        noticeRepository.insert(id, title, contents, request_for_reply, dt);
+        noticeRepository.insert(id, title, contents, request_for_reply, loginId, dt);
 
         for (int i = 0; i < filename.size(); i++) {
             fileRepository.insert(id, filename.get(i).getFileName().toString(), dt);
         }
-
-    }
-
-    public long findByLastInsertId() {
-
-        return noticeRepository.findByLastInsertNoticeId();
 
     }
 
@@ -51,12 +45,12 @@ public class NoticeService {
     }
 
     @Transactional
-    public void update(long id, String title, String contents, List<Path> filename, int request_for_reply, String dt) {
+    public void update(long id, String title, String contents, List<Path> filename, int request_for_reply, long loginId, String dt) {
 
         if (noticeRepository.findByNoticeId(id) == null) {
 
             // 登録
-            noticeRepository.insert(id, title, contents, request_for_reply, dt);
+            noticeRepository.insert(id, title, contents, request_for_reply, loginId, dt);
 
             for (int i = 0; i < filename.size(); i++) {
                 fileRepository.insert(id, filename.get(i).getFileName().toString(), dt);
@@ -65,7 +59,7 @@ public class NoticeService {
         } else {
 
             // 更新
-            noticeRepository.update(id, title, contents, request_for_reply, dt);
+            noticeRepository.update(id, title, contents, request_for_reply, loginId, dt);
 
             fileRepository.delete(id);
 
