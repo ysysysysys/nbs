@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.nbs.domain.draft.DraftNoticeRepository">
+
+    <!--    SELECT-->
+    <select id="findAll" resultMap="List_NoticeEntity_RM">
+        select
+        *
+        from
+        nbs.draft_notice
+        order by
+        updated_datetime desc
+    </select>
+    <resultMap id="List_NoticeEntity_RM" type="com.example.nbs.domain.notice.NoticeEntity">
+        <result column="id" property="id" jdbcType="BIGINT"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="contents" property="contents" jdbcType="VARCHAR"/>
+        <result column="request_for_reply" property="request_for_reply" jdbcType="INTEGER"/>
+        <result column="created_user_id" property="created_user_id" jdbcType="BIGINT"/>
+        <result column="updated_user_id" property="updated_user_id" jdbcType="BIGINT"/>
+        <result column="created_datetime" property="created_datetime" jdbcType="TIMESTAMP"/>
+        <result column="updated_datetime" property="updated_datetime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <select id="findByDraftId" resultMap="NoticeEntity_RM">
+        select
+        *
+        from
+        nbs.draft_notice
+        where
+        id = #{noticeId}
+    </select>
+    <resultMap id="NoticeEntity_RM" type="com.example.nbs.domain.notice.NoticeEntity">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="id" property="id" jdbcType="BIGINT"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="contents" property="contents" jdbcType="VARCHAR"/>
+        <result column="request_for_reply" property="request_for_reply" jdbcType="INTEGER"/>
+        <result column="created_user_id" property="created_user_id" jdbcType="BIGINT"/>
+        <result column="updated_user_id" property="updated_user_id" jdbcType="BIGINT"/>
+        <result column="created_datetime" property="created_datetime" jdbcType="TIMESTAMP"/>
+        <result column="updated_datetime" property="updated_datetime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+
+    <!--    INSERT-->
+    <insert id="insert">
+        insert into nbs.draft_notice (
+        id,
+        title,
+        contents,
+        request_for_reply,
+        created_user_id,
+        updated_user_id,
+        created_datetime,
+        updated_datetime
+        ) value (
+        #{id},
+        #{title},
+        #{contents},
+        #{request_for_reply},
+        #{loginId},
+        #{loginId},
+        #{dt},
+        #{dt})
+    </insert>
+
+
+    <!--    UPDATE-->
+    <update id="update">
+        update nbs.draft_notice set
+        title = #{title},
+        contents = #{contents},
+        request_for_reply = #{request_for_reply},
+        updated_user_id = #{loginId},
+        updated_datetime = #{dt}
+        where id = #{id}
+    </update>
+
+
+    <!--    DELETE-->
+    <delete id="delete">
+        delete
+        from nbs.draft_notice
+        where
+        id = #{id}
+    </delete>
+</mapper>
