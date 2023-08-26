@@ -40,6 +40,8 @@ public class FileUploadController {
     @GetMapping("/formAfterUpdate")
     public String listUploadedFiles(Model model) throws IOException {
 
+        model.addAttribute("loginId", Global.userId);
+
         // アップロードされたファイルをモデルに追加
         model.addAttribute("files", storageService.loadAll().map(
                 path -> MvcUriComponentsBuilder.fromMethodName(FileUploadController.class,
