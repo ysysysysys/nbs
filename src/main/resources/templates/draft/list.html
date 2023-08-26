@@ -29,7 +29,7 @@
     <tr th:each="notice : ${noticeList}">
         <td><a class="icon-link text-decoration-none" href="./detail.html" th:href="@{/draft/{noticeId}(noticeId=${notice.id})}"><i class="bi bi-info-circle mb-2" aria-hidden="true"></i>詳細</a></td>
         <td th:text="${notice.title}">(タイトル)</td>
-        <td th:text="${notice.contents}" style="white-space:pre-wrap; word-wrap:break-word;">(内容)</td>
+        <td th:text="${notice.contents}">(内容)</td>
 
         <div th:if="${notice.request_for_reply eq 1}">
             <td><a class="icon-link link-dark text-decoration-none"><i class="bi bi-check2-circle mb-2" aria-hidden="true"></i>あり</a></td>
@@ -43,5 +43,6 @@
     </tbody>
     </table>
 </div>
+<link th:href="@{/css/noticeList.css}" rel="stylesheet">
 </body>
 </html>
