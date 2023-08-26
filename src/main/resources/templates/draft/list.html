@@ -27,12 +27,12 @@
     </thead>
     <tbody>
     <tr th:each="notice : ${noticeList}">
-        <td><a href="./detail.html" th:href="@{/draft/{noticeId}(noticeId=${notice.id})}" class="text-decoration-none"><i class="bi bi-info-circle me-2"></i>詳細</a></td>
+        <td><a class="icon-link text-decoration-none" href="./detail.html" th:href="@{/draft/{noticeId}(noticeId=${notice.id})}"><i class="bi bi-info-circle mb-2" aria-hidden="true"></i>詳細</a></td>
         <td th:text="${notice.title}">(タイトル)</td>
         <td th:text="${notice.contents}" style="white-space:pre-wrap; word-wrap:break-word;">(内容)</td>
 
         <div th:if="${notice.request_for_reply eq 1}">
-            <td><i class="bi bi-check2-circle me-2"></i>あり</a></td>
+            <td><a class="icon-link link-dark text-decoration-none"><i class="bi bi-check2-circle mb-2" aria-hidden="true"></i>あり</a></td>
         </div>
         <div th:if="${notice.request_for_reply eq 0}">
             <td></td>
