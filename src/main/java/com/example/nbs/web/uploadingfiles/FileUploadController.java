@@ -2,7 +2,6 @@ package com.example.nbs.web.uploadingfiles;
 
 import com.example.nbs.web.Global;
 import com.example.nbs.web.notice.NoticeForm;
-import com.example.nbs.web.uploadingfiles.storage.StorageFileNotFoundException;
 import com.example.nbs.web.uploadingfiles.storage.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -152,13 +151,6 @@ public class FileUploadController {
         redirectAttributes.addFlashAttribute("noticeForm", noticeForm);
 
         return "redirect:/formAfterUpdate";
-
-    }
-
-    @ExceptionHandler(StorageFileNotFoundException.class)
-    public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
-
-        return ResponseEntity.notFound().build();
 
     }
 
