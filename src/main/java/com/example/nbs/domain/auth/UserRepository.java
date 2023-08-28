@@ -1,11 +1,13 @@
 package com.example.nbs.domain.auth;
 
 import org.apache.ibatis.annotations.*;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Mapper
+@Repository
 public interface UserRepository {
 
     List<UserEntity> findAll();
