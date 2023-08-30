@@ -12,14 +12,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final UserRepositoryImpl userRepositoryImpl;
 
     private final PasswordEncoder passwordEncoder;
 
     @PreAuthorize("hasAuthority('ADMIN')")
     public List<UserEntity> findAll() {
 
-        return userRepository.findAll();
+        return userRepositoryImpl.findAll();
 
     }
 
@@ -27,19 +27,19 @@ public class UserService {
     public void create(String username, String password, String authority, String fullname, String address, String dt) {
 
         var encodedPassword = passwordEncoder.encode(password);
-        userRepository.insert(username, encodedPassword, authority, fullname, address, dt);
+        userRepositoryImpl.insert(username, encodedPassword, authority, fullname, address, dt);
 
     }
 
     public UserEntity findById(long id) {
 
-        return userRepository.findByUserId(id);
+        return userRepositoryImpl.findByUserId(id);
 
     }
 
     public long toUserId(String username) {
 
-        Optional<UserEntity> userEntity = userRepository.findByUsername(username);
+        Optional<UserEntity> userEntity = userRepositoryImpl.findByUsername(username);
 
         return userEntity.get().getId();
 
@@ -47,32 +47,32 @@ public class UserService {
 
     public void updateAuthority(long id, String authority, String dt) {
 
-        userRepository.updateAuthority(id, authority, dt);
+        userRepositoryImpl.updateAuthority(id, authority, dt);
 
     }
 
     public void updateBasicInfo(long id, String fullname, String address, String dt) {
 
-        userRepository.updateBasicInfo(id, fullname, address, dt);
+        userRepositoryImpl.updateBasicInfo(id, fullname, address, dt);
 
     }
 
     public void updateUsername(long id, String username, String dt) {
 
-        userRepository.updateUsername(id, username, dt);
+        userRepositoryImpl.updateUsername(id, username, dt);
 
     }
 
     public void updatePassword(long id, String password, String dt) {
 
         var encodedPassword = passwordEncoder.encode(password);
-        userRepository.updatePassword(id, encodedPassword, dt);
+        userRepositoryImpl.updatePassword(id, encodedPassword, dt);
 
     }
 
     public void delete(long id) {
 
-        userRepository.delete(id);
+        userRepositoryImpl.delete(id);
 
     }
 

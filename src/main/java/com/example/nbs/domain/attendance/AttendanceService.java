@@ -11,36 +11,36 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AttendanceService {
 
-    private final AttendanceRepository attendanceRepository;
+    private final AttendanceRepositoryImpl attendanceRepositoryImpl;
 
     public List<AttendanceEntity> findAll() {
 
-        return attendanceRepository.findAll();
+        return attendanceRepositoryImpl.findAll();
 
     }
 
     @Transactional
     public void create(long noticeId, long userId, int attendanceCheck, String dtF2) {
 
-        attendanceRepository.insert(noticeId, userId, attendanceCheck, dtF2);
+        attendanceRepositoryImpl.insert(noticeId, userId, attendanceCheck, dtF2);
 
     }
 
     public AttendanceEntity findById(long id) {
 
-        return attendanceRepository.findByNoticeId(id);
+        return attendanceRepositoryImpl.findByNoticeId(id);
 
     }
 
     public int existAttendance(long noticeId, long userId) {
 
-        return attendanceRepository.count(noticeId, userId);
+        return attendanceRepositoryImpl.count(noticeId, userId);
 
     }
 
     public List<ReplyDto> findByNoticeIdReply(long noticeId) {
 
-        return attendanceRepository.findByNoticeIdReply(noticeId);
+        return attendanceRepositoryImpl.findByNoticeIdReply(noticeId);
 
     }
 

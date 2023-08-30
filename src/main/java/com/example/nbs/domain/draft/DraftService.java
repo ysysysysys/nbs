@@ -13,37 +13,37 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DraftService {
 
-    private final DraftNoticeRepository draftNoticeRepository;
+    private final DraftNoticeRepositoryImpl draftNoticeRepositoryImpl;
 
-    private final DraftFileRepository draftFileRepository;
+    private final DraftFileRepositoryImpl draftFileRepositoryImpl;
 
     public List<NoticeEntity> findAll() {
 
-        return draftNoticeRepository.findAll();
+        return draftNoticeRepositoryImpl.findAll();
 
     }
 
     @Transactional
     public void save(long id, String title, String contents, List<Path> filename, int request_for_reply, long loginId, String dt) {
 
-        if (draftNoticeRepository.findByDraftId(id) == null) {
+        if (draftNoticeRepositoryImpl.findByDraftId(id) == null) {
 
             // 登録
-            draftNoticeRepository.insert(id, title, contents, request_for_reply, loginId, dt);
+            draftNoticeRepositoryImpl.insert(id, title, contents, request_for_reply, loginId, dt);
 
             for (int i = 0; i < filename.size(); i++) {
-                draftFileRepository.insert(id, filename.get(i).getFileName().toString(), dt);
+                draftFileRepositoryImpl.insert(id, filename.get(i).getFileName().toString(), dt);
             }
 
         } else {
 
             // 更新
-            draftNoticeRepository.update(id, title, contents, request_for_reply, loginId, dt);
+            draftNoticeRepositoryImpl.update(id, title, contents, request_for_reply, loginId, dt);
 
-            draftFileRepository.delete(id);
+            draftFileRepositoryImpl.delete(id);
 
             for (int i = 0; i < filename.size(); i++) {
-                draftFileRepository.insert(id, filename.get(i).getFileName().toString(), dt);
+                draftFileRepositoryImpl.insert(id, filename.get(i).getFileName().toString(), dt);
             }
 
         }
@@ -52,16 +52,16 @@ public class DraftService {
 
     public NoticeEntity findById(long id) {
 
-        return draftNoticeRepository.findByDraftId(id);
+        return draftNoticeRepositoryImpl.findByDraftId(id);
 
     }
 
     @Transactional
     public void delete(long id) {
 
-        draftNoticeRepository.delete(id);
+        draftNoticeRepositoryImpl.delete(id);
 
-        draftFileRepository.delete(id);
+        draftFileRepositoryImpl.delete(id);
 
     }
 

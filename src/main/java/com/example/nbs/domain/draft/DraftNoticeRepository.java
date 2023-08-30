@@ -1,13 +1,11 @@
 package com.example.nbs.domain.draft;
 
 import com.example.nbs.domain.notice.NoticeEntity;
-import org.apache.ibatis.annotations.*;
-import org.springframework.stereotype.Repository;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
 @Mapper
-@Repository
 public interface DraftNoticeRepository {
 
     List<NoticeEntity> findAll();

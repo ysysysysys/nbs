@@ -1,10 +1,8 @@
 package com.example.nbs.domain.notice;
 
-import org.apache.ibatis.annotations.*;
-import org.springframework.stereotype.Repository;
+import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-@Repository
 public interface FileRepository {
 
     void insert(long noticeLastId, String filename, String dt);

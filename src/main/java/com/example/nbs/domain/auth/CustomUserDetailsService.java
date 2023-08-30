@@ -15,12 +15,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final UserRepositoryImpl userRepositoryImpl;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        return userRepository.findByUsername(username)
+        return userRepositoryImpl.findByUsername(username)
                 .map(
                         user -> new CustomUserDetails(
                                 user.getUsername(),

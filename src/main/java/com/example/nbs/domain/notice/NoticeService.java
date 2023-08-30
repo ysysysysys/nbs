@@ -15,56 +15,56 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NoticeService {
 
-    private final NoticeRepository noticeRepository;
+    private final NoticeRepositoryImpl noticeRepositoryImpl;
 
-    private final FileRepository fileRepository;
+    private final FileRepositoryImpl fileRepositoryImpl;
 
     private final AttendanceService attendanceService;
 
     public List<NoticeEntity> findAll() {
 
-        return noticeRepository.findAll();
+        return noticeRepositoryImpl.findAll();
 
     }
 
     @Transactional
     public void create(long id, String title, String contents, List<Path> filename, int request_for_reply, long loginId, String dt) {
 
-        noticeRepository.insert(id, title, contents, request_for_reply, loginId, dt);
+        noticeRepositoryImpl.insert(id, title, contents, request_for_reply, loginId, dt);
 
         for (int i = 0; i < filename.size(); i++) {
-            fileRepository.insert(id, filename.get(i).getFileName().toString(), dt);
+            fileRepositoryImpl.insert(id, filename.get(i).getFileName().toString(), dt);
         }
 
     }
 
     public NoticeEntity findById(long id) {
 
-        return noticeRepository.findByNoticeId(id);
+        return noticeRepositoryImpl.findByNoticeId(id);
 
     }
 
     @Transactional
     public void update(long id, String title, String contents, List<Path> filename, int request_for_reply, long loginId, String dt) {
 
-        if (noticeRepository.findByNoticeId(id) == null) {
+        if (noticeRepositoryImpl.findByNoticeId(id) == null) {
 
             // 登録
-            noticeRepository.insert(id, title, contents, request_for_reply, loginId, dt);
+            noticeRepositoryImpl.insert(id, title, contents, request_for_reply, loginId, dt);
 
             for (int i = 0; i < filename.size(); i++) {
-                fileRepository.insert(id, filename.get(i).getFileName().toString(), dt);
+                fileRepositoryImpl.insert(id, filename.get(i).getFileName().toString(), dt);
             }
 
         } else {
 
             // 更新
-            noticeRepository.update(id, title, contents, request_for_reply, loginId, dt);
+            noticeRepositoryImpl.update(id, title, contents, request_for_reply, loginId, dt);
 
-            fileRepository.delete(id);
+            fileRepositoryImpl.delete(id);
 
             for (int i = 0; i < filename.size(); i++) {
-                fileRepository.insert(id, filename.get(i).getFileName().toString(), dt);
+                fileRepositoryImpl.insert(id, filename.get(i).getFileName().toString(), dt);
             }
 
         }
@@ -74,9 +74,9 @@ public class NoticeService {
     @Transactional
     public void delete(long id) {
 
-        noticeRepository.delete(id);
+        noticeRepositoryImpl.delete(id);
 
-        fileRepository.delete(id);
+        fileRepositoryImpl.delete(id);
 
     }
 
