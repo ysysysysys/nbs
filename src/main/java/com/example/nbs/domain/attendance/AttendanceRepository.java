@@ -18,4 +18,6 @@ public interface AttendanceRepository {
 
     void insert(long noticeId, long userId, int attendanceCheck, String dt);
 
+    void delete(long noticeId);
+
 }

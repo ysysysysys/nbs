@@ -78,6 +78,8 @@ public class NoticeService {
 
         fileRepositoryImpl.delete(id);
 
+        attendanceService.delete(id);
+
     }
 
     public List<NoticeListForUserDto> toNoticeListForUserDto(List<NoticeEntity> noticeList) {

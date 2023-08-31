@@ -78,6 +78,11 @@
 
 
     <!--    DELETE-->
-
+    <delete id="delete">
+        delete
+        from nbs.attendance
+        where
+        notice_id = #{noticeId}
+    </delete>
 
 </mapper>

@@ -38,4 +38,10 @@ public class AttendanceRepositoryImpl implements AttendanceRepository {
         attendanceRepository.insert(noticeId, userId, attendanceCheck, dt);
     }
 
+    public void delete(long noticeId) {
+
+        attendanceRepository.delete(noticeId);
+
+    }
+
 }

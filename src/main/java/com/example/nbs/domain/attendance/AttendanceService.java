@@ -44,4 +44,10 @@ public class AttendanceService {
 
     }
 
+    public void delete(long noticeId) {
+
+        attendanceRepositoryImpl.delete(noticeId);
+
+    }
+
 }
