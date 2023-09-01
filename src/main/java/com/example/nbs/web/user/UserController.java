@@ -1,8 +1,9 @@
 package com.example.nbs.web.user;
 
+import com.example.nbs.domain.auth.LoginUser;
 import com.example.nbs.domain.auth.UserEntity;
 import com.example.nbs.domain.auth.UserService;
-import com.example.nbs.web.Global;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -19,19 +20,31 @@ import java.time.format.DateTimeFormatter;
 @Controller
 @RequestMapping("/user")
 @RequiredArgsConstructor
+@SessionAttributes(types = LoginUser.class)
 public class UserController {
 
     private final UserService userService;
 
     private final PasswordEncoder passwordEncoder;
 
+    @ModelAttribute("loginUser")
+    public LoginUser loginUser(HttpSession session) {
+
+        // ログインユーザー情報を保持しておく
+        LoginUser loginUser = new LoginUser();
+        LoginUser userInfo = (LoginUser) session.getAttribute("loginUser");
+        loginUser.setLoginId(userInfo.getLoginId());
+        loginUser.setLoginUsername(userInfo.getLoginUsername());
+        loginUser.setLoginAuthority(userInfo.getLoginAuthority());
+
+        return loginUser;
+    }
+
     /**
      * ユーザー一覧表示
      */
     @GetMapping
     public String showList(Model model) {
-
-        model.addAttribute("loginId", Global.userId);
 
         model.addAttribute("userList", userService.findAll());
 
@@ -43,8 +56,6 @@ public class UserController {
      */
     @GetMapping("/creationForm")
     public String showCreationForm(@ModelAttribute UserForm form, Model model) {
-
-        model.addAttribute("loginId", Global.userId);
 
         // 権限のデフォルト設定(user/creationForm.htmlでラジオボタンのcheckedが効かないため、コントローラー側から初期値を渡す。)
         form.setAuthority(UserEntity.Authority.USER.name());
@@ -79,13 +90,8 @@ public class UserController {
     @GetMapping("/{userId}")
     public String showDetail(@PathVariable("userId") long userId, Model model) {
 
-        model.addAttribute("loginId", Global.userId);
-
         // ユーザー登録情報取得してセット
         model.addAttribute("user", userService.findById(userId));
-
-        // ログインIDをセット
-        model.addAttribute("ownId", Global.userId);
 
         return "user/detail";
 
@@ -96,8 +102,6 @@ public class UserController {
      */
     @GetMapping("/changeAuthorityForm/{userId}")
     public String showChangeAuthorityForm(@PathVariable("userId") long userId, Model model) {
-
-        model.addAttribute("loginId", Global.userId);
 
         if (!model.containsAttribute("userAuthorityForm")) {
 
@@ -117,8 +121,6 @@ public class UserController {
      */
     @GetMapping("/changeBasicInfoForm/{userId}")
     public String showChangeBasicInfoForm(@PathVariable("userId") long userId, Model model) {
-
-        model.addAttribute("loginId", Global.userId);
 
         if (!model.containsAttribute("userBasicInfoForm")) {
 
@@ -140,8 +142,6 @@ public class UserController {
     @GetMapping("/changeUsernameForm/{userId}")
     public String showChangeUsernameForm(@PathVariable("userId") long userId, Model model) {
 
-        model.addAttribute("loginId", Global.userId);
-
         if (!model.containsAttribute("userUsernameForm")) {
 
             UserUsernameForm userUsernameForm = new UserUsernameForm();
@@ -159,8 +159,6 @@ public class UserController {
      */
     @GetMapping("/changePasswordForm/{userId}")
     public String showChangePasswordForm(@PathVariable("userId") long userId, Model model) {
-
-        model.addAttribute("loginId", Global.userId);
 
         if (!model.containsAttribute("userPasswordForm")) {
 

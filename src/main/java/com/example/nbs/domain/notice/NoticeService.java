@@ -2,7 +2,6 @@ package com.example.nbs.domain.notice;
 
 
 import com.example.nbs.domain.attendance.AttendanceService;
-import com.example.nbs.web.Global;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,7 +81,7 @@ public class NoticeService {
 
     }
 
-    public List<NoticeListForUserDto> toNoticeListForUserDto(List<NoticeEntity> noticeList) {
+    public List<NoticeListForUserDto> toNoticeListForUserDto(List<NoticeEntity> noticeList, long loginId) {
 
         NoticeListForUserDto noticeListForUserDto;
         List<NoticeListForUserDto> noticeListForUserDtoList = new ArrayList<NoticeListForUserDto>();
@@ -101,7 +100,7 @@ public class NoticeService {
 
             } else {
 
-                if (0 == attendanceService.existAttendance(noticeList.get(i).getId(), Global.userId)) {
+                if (0 == attendanceService.existAttendance(noticeList.get(i).getId(), loginId)) {
                     noticeListForUserDto.setRequest_for_reply("【未送信】");
 
                 } else {

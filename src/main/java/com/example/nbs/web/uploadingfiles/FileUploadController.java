@@ -1,8 +1,9 @@
 package com.example.nbs.web.uploadingfiles;
 
-import com.example.nbs.web.Global;
+import com.example.nbs.domain.auth.LoginUser;
 import com.example.nbs.web.notice.NoticeForm;
 import com.example.nbs.web.uploadingfiles.storage.StorageService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
+@SessionAttributes(types = LoginUser.class)
 public class FileUploadController {
 
     private final StorageService storageService;
@@ -33,13 +35,29 @@ public class FileUploadController {
         this.storageService = storageService;
     }
 
+    @ModelAttribute("loginUser")
+    public LoginUser loginUser(HttpSession session) {
+
+        // ログインユーザー情報を保持しておく
+        LoginUser loginUser = new LoginUser();
+        LoginUser userInfo = (LoginUser) session.getAttribute("loginUser");
+        loginUser.setLoginId(userInfo.getLoginId());
+        loginUser.setLoginUsername(userInfo.getLoginUsername());
+        loginUser.setLoginAuthority(userInfo.getLoginAuthority());
+
+        return loginUser;
+    }
+
+    @ModelAttribute("pageTitle")
+    public String pageTitle(HttpSession session) {
+        return (String) session.getAttribute("pageTitle");
+    }
+
     /**
      * アップロードファイル一覧表示
      */
     @GetMapping("/formAfterUpdate")
     public String listUploadedFiles(Model model) throws IOException {
-
-        model.addAttribute("loginId", Global.userId);
 
         // アップロードされたファイルをモデルに追加
         model.addAttribute("files", storageService.loadAll().map(
@@ -47,7 +65,7 @@ public class FileUploadController {
                         "serveFile", path.getFileName().toString()).build().toUri().toString()).collect(Collectors.toList()));
 
 
-        return (Global.h1.equals("お知らせ作成")) ? "notice/creationForm" : "notice/editForm";
+        return (model.getAttribute("pageTitle").equals("お知らせ作成")) ? "notice/creationForm" : "notice/editForm";
 
     }
 

@@ -1,10 +1,10 @@
 package com.example.nbs.web.notice;
 
 import com.example.nbs.domain.attendance.AttendanceService;
+import com.example.nbs.domain.auth.LoginUser;
 import com.example.nbs.domain.notice.NoticeEntity;
 import com.example.nbs.domain.notice.NoticeListForUserDto;
 import com.example.nbs.domain.notice.NoticeService;
-import com.example.nbs.web.Global;
 import com.example.nbs.web.attendance.AttendanceForm;
 import com.example.nbs.web.uploadingfiles.FileUploadController;
 import com.example.nbs.web.uploadingfiles.storage.FileSystemStorageService;
@@ -15,10 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -32,6 +29,7 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/notice")
 @RequiredArgsConstructor
+@SessionAttributes(types = LoginUser.class)
 public class NoticeController {
 
     private final NoticeService noticeService;
@@ -41,20 +39,33 @@ public class NoticeController {
     @Autowired
     private FileSystemStorageService fileSystemStorageService;
 
+    @ModelAttribute("loginUser")
+    public LoginUser loginUser(HttpSession session) {
+
+        // ログインユーザー情報を保持しておく
+        LoginUser loginUser = new LoginUser();
+        LoginUser userInfo = (LoginUser) session.getAttribute("loginUser");
+        loginUser.setLoginId(userInfo.getLoginId());
+        loginUser.setLoginUsername(userInfo.getLoginUsername());
+        loginUser.setLoginAuthority(userInfo.getLoginAuthority());
+
+        return loginUser;
+    }
+
     /**
      * お知らせ一覧表示
      */
     @GetMapping
     public String showList(Model model) {
 
-        model.addAttribute("loginId", Global.userId);
+        LoginUser userInfo = (LoginUser) model.getAttribute("loginUser");
 
-        if (Global.authority == "ADMIN") {
+        if (userInfo.getLoginAuthority().toString() == "ADMIN") {
             List<NoticeEntity> noticeList = noticeService.findAll();
             model.addAttribute("noticeList", noticeList);
 
         } else {
-            List<NoticeListForUserDto> noticeListForUserDto = noticeService.toNoticeListForUserDto(noticeService.findAll());
+            List<NoticeListForUserDto> noticeListForUserDto = noticeService.toNoticeListForUserDto(noticeService.findAll(), userInfo.getLoginId());
             model.addAttribute("noticeList", noticeListForUserDto);
 
         }
@@ -67,11 +78,9 @@ public class NoticeController {
      * お知らせ作成フォーム表示
      */
     @GetMapping("/creationForm")
-    public String showCreationForm(Model model) {
+    public String showCreationForm(Model model, HttpSession session) {
 
-        model.addAttribute("loginId", Global.userId);
-
-        Global.h1 = "お知らせ作成";
+        session.setAttribute("pageTitle", "お知らせ作成");
 
         model.addAttribute("noticeForm", new NoticeForm());
 
@@ -115,7 +124,8 @@ public class NoticeController {
         }
 
         // DB反映
-        noticeService.create(Long.parseLong(dtF1), form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), Global.userId, dtF2);
+        LoginUser userInfo = (LoginUser) model.getAttribute("loginUser");
+        noticeService.create(Long.parseLong(dtF1), form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), userInfo.getLoginId(), dtF2);
 
         return "redirect:/notice";
 
@@ -126,8 +136,6 @@ public class NoticeController {
      */
     @GetMapping("/{noticeId}")
     public String showDetail(@PathVariable("noticeId") long noticeId, Model model) {
-
-        model.addAttribute("loginId", Global.userId);
 
         // お知らせ詳細取得してセット
         model.addAttribute("notice", noticeService.findById(noticeId));
@@ -145,8 +153,9 @@ public class NoticeController {
 
 
         // 出席確認送信状況取得してセット
+        LoginUser userInfo = (LoginUser) model.getAttribute("loginUser");
         AttendanceForm attendanceForm = new AttendanceForm();
-        if (0 == attendanceService.existAttendance(noticeId, Global.userId)) {
+        if (0 == attendanceService.existAttendance(noticeId, userInfo.getLoginId())) {
 
             attendanceForm.setAttendance_check(0);
             attendanceForm.setSend_flg("NOTYET");
@@ -170,9 +179,7 @@ public class NoticeController {
     @GetMapping("/editForm/{noticeId}")
     public String showEditForm(@PathVariable("noticeId") long noticeId, Model model, HttpSession session) {
 
-        model.addAttribute("loginId", Global.userId);
-
-        Global.h1 = "お知らせ編集";
+        session.setAttribute("pageTitle", "お知らせ編集");
 
         session.setAttribute("noticeId", noticeId);
 
@@ -226,7 +233,8 @@ public class NoticeController {
         fileSystemStorageService.updateFile(String.valueOf(noticeId));
 
         // DB反映
-        noticeService.update(noticeId, form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), Global.userId, dtF2);
+        LoginUser userInfo = (LoginUser) model.getAttribute("loginUser");
+        noticeService.update(noticeId, form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), userInfo.getLoginId(), dtF2);
 
         // セッションクリア
         Enumeration en = session.getAttributeNames();

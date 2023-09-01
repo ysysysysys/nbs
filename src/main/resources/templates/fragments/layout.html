@@ -42,7 +42,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-lg-end" aria-labelledby="accountDropdown">
                             <li><a class="dropdown-item" href="./user/detail.html"
-                                   th:href="@{/user/{userId}(userId=${loginId})}">マイページ</a></li>
+                                   th:href="@{/user/{userId}(userId=${loginUser.loginId})}">マイページ</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>

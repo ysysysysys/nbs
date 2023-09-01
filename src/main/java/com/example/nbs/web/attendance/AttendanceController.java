@@ -1,23 +1,22 @@
 package com.example.nbs.web.attendance;
 
 import com.example.nbs.domain.attendance.AttendanceService;
+import com.example.nbs.domain.auth.LoginUser;
 import com.example.nbs.domain.auth.UserService;
 import com.example.nbs.domain.notice.NoticeService;
-import com.example.nbs.web.Global;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Controller
 @RequiredArgsConstructor
+@SessionAttributes(types = LoginUser.class)
 public class AttendanceController {
 
     private final AttendanceService attendanceService;
@@ -26,18 +25,32 @@ public class AttendanceController {
 
     private final UserService userService;
 
+    @ModelAttribute("loginUser")
+    public LoginUser loginUser(HttpSession session) {
+
+        // ログインユーザー情報を保持しておく
+        LoginUser loginUser = new LoginUser();
+        LoginUser userInfo = (LoginUser) session.getAttribute("loginUser");
+        loginUser.setLoginId(userInfo.getLoginId());
+        loginUser.setLoginUsername(userInfo.getLoginUsername());
+        loginUser.setLoginAuthority(userInfo.getLoginAuthority());
+
+        return loginUser;
+    }
+
     /**
      * 出欠可否送信(登録)
      */
     @PostMapping("/notice/attendance/{noticeId}")
-    public String update(@Validated AttendanceForm form, @PathVariable("noticeId") long noticeId) {
+    public String update(@Validated AttendanceForm form, @PathVariable("noticeId") long noticeId, Model model) {
 
         // システム日付取得
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
         String dtF2 = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
 
         // DB反映
-        attendanceService.create(noticeId, Global.userId, form.getAttendance_check(), dtF2);
+        LoginUser userInfo = (LoginUser) model.getAttribute("loginUser");
+        attendanceService.create(noticeId, userInfo.getLoginId(), form.getAttendance_check(), dtF2);
 
         return "redirect:/notice/{noticeId}";
 
@@ -49,7 +62,7 @@ public class AttendanceController {
     @GetMapping("/attendance/{noticeId}")
     public String showList(@PathVariable("noticeId") long noticeId, @ModelAttribute ReplyForm replyForm, Model model) {
 
-        model.addAttribute("loginId", Global.userId);
+//        model.addAttribute("loginId", Global.userId);
 
         replyForm.setNoticeTitle(noticeService.findById(noticeId).getTitle());
         replyForm.setNumberOfAttendance(attendanceService.findByNoticeIdReply(noticeId).stream().filter(i -> i.getReply().equals("出席")).count());

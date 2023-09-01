@@ -1,8 +1,8 @@
 package com.example.nbs.web.draft;
 
+import com.example.nbs.domain.auth.LoginUser;
 import com.example.nbs.domain.draft.DraftService;
 import com.example.nbs.domain.notice.NoticeEntity;
-import com.example.nbs.web.Global;
 import com.example.nbs.web.notice.NoticeForm;
 import com.example.nbs.web.uploadingfiles.FileUploadController;
 import com.example.nbs.web.uploadingfiles.storage.FileSystemStorageService;
@@ -13,10 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -30,6 +27,7 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/draft")
 @RequiredArgsConstructor
+@SessionAttributes(types = LoginUser.class)
 public class DraftController {
 
     private final DraftService draftService;
@@ -37,13 +35,24 @@ public class DraftController {
     @Autowired
     private FileSystemStorageService fileSystemStorageService;
 
+    @ModelAttribute("loginUser")
+    public LoginUser loginUser(HttpSession session) {
+
+        // ログインユーザー情報を保持しておく
+        LoginUser loginUser = new LoginUser();
+        LoginUser userInfo = (LoginUser) session.getAttribute("loginUser");
+        loginUser.setLoginId(userInfo.getLoginId());
+        loginUser.setLoginUsername(userInfo.getLoginUsername());
+        loginUser.setLoginAuthority(userInfo.getLoginAuthority());
+
+        return loginUser;
+    }
+
     /**
      * 下書き一覧表示
      */
     @GetMapping("/list")
     public String showList(Model model) {
-
-        model.addAttribute("loginId", Global.userId);
 
         List<NoticeEntity> noticeList = draftService.findAll();
         model.addAttribute("noticeList", noticeList);
@@ -87,7 +96,8 @@ public class DraftController {
         fileSystemStorageService.updateFile(String.valueOf(noticeId) + "_draft");
 
         // DB反映
-        draftService.save(noticeId, form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), Global.userId, dtF2);
+        LoginUser userInfo  = (LoginUser) model.getAttribute("loginUser");
+        draftService.save(noticeId, form.getTitle(), form.getContents(), filePathInfo, form.getRequest_for_reply(), userInfo.getLoginId(), dtF2);
 
         // セッションクリア
         Enumeration en = session.getAttributeNames();
@@ -110,8 +120,6 @@ public class DraftController {
      */
     @GetMapping("/{noticeId}")
     public String showDetail(@PathVariable("noticeId") long noticeId, Model model) {
-
-        model.addAttribute("loginId", Global.userId);
 
         model.addAttribute("notice", draftService.findById(noticeId));
 
@@ -136,9 +144,7 @@ public class DraftController {
     @GetMapping("/editForm/{noticeId}")
     public String showEditForm(@PathVariable("noticeId") long noticeId, Model model, HttpSession session) {
 
-        model.addAttribute("loginId", Global.userId);
-
-        Global.h1 = "お知らせ編集";
+        session.setAttribute("pageTitle", "お知らせ編集");
 
         session.setAttribute("noticeId", noticeId);
 

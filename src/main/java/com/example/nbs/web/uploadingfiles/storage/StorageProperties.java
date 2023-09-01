@@ -1,6 +1,5 @@
 package com.example.nbs.web.uploadingfiles.storage;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("storage")

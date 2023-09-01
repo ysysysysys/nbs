@@ -16,7 +16,7 @@
 
 <h1 class="mt-5">登録情報</h1>
 <table class="table" style="width: 60%">
-    <input type="hidden" id="ownId" th:field="*{ownId}"/>
+    <input type="hidden" id="ownId" th:field="*{loginUser.loginId}"/>
     <tr class="align-middle">
         <td>権限</td>
         <td th:text="${user.authority}">(権限)</td>
@@ -45,7 +45,7 @@
         <td>ユーザー名</td>
         <td th:text="${user.username}">(ユーザー名)</td>
         <td>
-            <div th:if="${user.id eq ownId}">
+            <div th:if="${user.id eq loginUser.loginId}">
                 <a href="./changeUsernameForm.html" th:href="@{/user/changeUsernameForm/{userId}(userId=${user.id})}">
                     <button class="btn btn-outline-primary">変更</button>
                 </a>
@@ -56,7 +56,7 @@
         <td>パスワード</td>
         <td>********</td>
         <td>
-            <div th:if="${user.id eq ownId}">
+            <div th:if="${user.id eq loginUser.loginId}">
                 <a href="./changePasswordForm.html" th:href="@{/user/changePasswordForm/{userId}(userId=${user.id})}">
                     <button class="btn btn-outline-primary">変更</button>
                 </a>
